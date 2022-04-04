@@ -18,7 +18,7 @@ import wordle.state
 from a2c.agent import ActorCriticAgent
 from a2c.experience import ExperienceSourceDataset, Experience
 
-import h5py
+# import h5py
 
 class AdvantageActorCritic(LightningModule):
     """PyTorch Lightning implementation of `Advantage Actor Critic <https://arxiv.org/abs/1602.01783v2>`_.
@@ -200,11 +200,11 @@ class AdvantageActorCritic(LightningModule):
 
             returns = self.compute_returns(batch_rewards, batch_masks, last_value)
 
-            self._data["states"].extend(batch_states)
-            self._data["actions"].extend(batch_actions)
-            self._data["dones"].extend(batch_masks)
-            self._data["returns"].extend(list(returns.numpy()))
-            self._data["targets"].extend(batch_targets)
+            # self._data["states"].extend(batch_states)
+            # self._data["actions"].extend(batch_actions)
+            # self._data["dones"].extend(batch_masks)
+            # self._data["returns"].extend(list(returns.numpy()))
+            # self._data["targets"].extend(batch_targets)
 
             # if len(self._data["actions"]) >= self._num_batches_before_clear * len(batch_actions):
                 
