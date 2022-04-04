@@ -48,9 +48,7 @@ class SumChars(nn.Module):
                             dims=((1,), (0,))),
             dim=-1), min=-15, max=0)
         critic_c = self.critic_head(y)
-        # if self.count >= 10000:
-        # # # if -8 in actor_a:
-            # import pdb; pdb.set_trace()
+
         self.count +=1
         
         return actor_a, critic_c
