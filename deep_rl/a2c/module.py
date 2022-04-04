@@ -101,19 +101,19 @@ class AdvantageActorCritic(LightningModule):
         self.state = self.env.reset()
 
         # For collecting data
-        self._num_batches_before_clear = 10
-        self._resize_dset = False
-        self._data = {"states": [], "actions": [], "dones": [], "returns": [], "targets" : []}
+        # self._num_batches_before_clear = 10
+        # self._resize_dset = False
+        # self._data = {"states": [], "actions": [], "dones": [], "returns": [], "targets" : []}
 
-        # Create the hd5 file
-        if not evaluate:
-            file_name = "./data/a2c/" + self.env_str + ".hdf5"
-            with h5py.File(file_name, 'w') as f:
-                states_dset = f.create_dataset("states", (self._num_batches_before_clear * batch_size, self.state.shape[0]), maxshape=(None, 417),dtype=np.uint, compression="gzip", compression_opts=9)
-                actions_dset = f.create_dataset("actions", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
-                dones_dset = f.create_dataset("dones", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.bool_, compression="gzip", compression_opts=9)
-                returns_dset = f.create_dataset("returns", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
-                targets_dset = f.create_dataset("targets", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
+        # # Create the hd5 file
+        # if not evaluate:
+        #     file_name = "./data/a2c/" + self.env_str + ".hdf5"
+        #     with h5py.File(file_name, 'w') as f:
+        #         states_dset = f.create_dataset("states", (self._num_batches_before_clear * batch_size, self.state.shape[0]), maxshape=(None, 417),dtype=np.uint, compression="gzip", compression_opts=9)
+        #         actions_dset = f.create_dataset("actions", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
+        #         dones_dset = f.create_dataset("dones", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.bool_, compression="gzip", compression_opts=9)
+        #         returns_dset = f.create_dataset("returns", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
+        #         targets_dset = f.create_dataset("targets", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
 
 
     def forward(self, x: Tensor) -> Tuple[Tensor, Tensor]:
@@ -200,51 +200,51 @@ class AdvantageActorCritic(LightningModule):
 
             returns = self.compute_returns(batch_rewards, batch_masks, last_value)
 
-            self._data["states"].extend(batch_states)
-            self._data["actions"].extend(batch_actions)
-            self._data["dones"].extend(batch_masks)
-            self._data["returns"].extend(list(returns.numpy()))
-            self._data["targets"].extend(batch_targets)
+            # self._data["states"].extend(batch_states)
+            # self._data["actions"].extend(batch_actions)
+            # self._data["dones"].extend(batch_masks)
+            # self._data["returns"].extend(list(returns.numpy()))
+            # self._data["targets"].extend(batch_targets)
 
-            if len(self._data["actions"]) >= self._num_batches_before_clear * len(batch_actions):
+            # if len(self._data["actions"]) >= self._num_batches_before_clear * len(batch_actions):
                 
-                length = len(self._data["actions"])
+            #     length = len(self._data["actions"])
 
-                file_name = "./data/a2c/" + self.env_str + ".hdf5"
-                with h5py.File(file_name, 'a') as f:
+                # file_name = "./data/a2c/" + self.env_str + ".hdf5"
+                # with h5py.File(file_name, 'a') as f:
 
-                    states_dset = f["states"]
-                    actions_dset = f["actions"]
-                    dones_dset = f["dones"]
-                    returns_dset = f["returns"]
-                    targets_dset = f["targets"]
+                #     states_dset = f["states"]
+                #     actions_dset = f["actions"]
+                #     dones_dset = f["dones"]
+                #     returns_dset = f["returns"]
+                #     targets_dset = f["targets"]
 
-                    curr_size = states_dset.shape[0]
+                #     curr_size = states_dset.shape[0]
 
-                    if self._resize_dset:
-                        states_dset.resize(curr_size + length, axis=0)
-                        actions_dset.resize(curr_size + length, axis=0)
-                        dones_dset.resize(curr_size + length, axis=0)
-                        returns_dset.resize(curr_size + length, axis=0)
-                        targets_dset.resize(curr_size + length, axis=0)
+                #     if self._resize_dset:
+                #         states_dset.resize(curr_size + length, axis=0)
+                #         actions_dset.resize(curr_size + length, axis=0)
+                #         dones_dset.resize(curr_size + length, axis=0)
+                #         returns_dset.resize(curr_size + length, axis=0)
+                #         targets_dset.resize(curr_size + length, axis=0)
 
-                        states_dset[curr_size:, :] = self._data["states"]
-                        actions_dset[curr_size:] = self._data["actions"]
-                        dones_dset[curr_size:] = self._data["dones"]
-                        returns_dset[curr_size:] = self._data["returns"]
-                        targets_dset[curr_size:] = self._data["targets"]
+                #         states_dset[curr_size:, :] = self._data["states"]
+                #         actions_dset[curr_size:] = self._data["actions"]
+                #         dones_dset[curr_size:] = self._data["dones"]
+                #         returns_dset[curr_size:] = self._data["returns"]
+                #         targets_dset[curr_size:] = self._data["targets"]
 
-                    else:
-                        self._resize_dset = True
-                        states_dset[:, :] = self._data["states"]
-                        actions_dset[:] = self._data["actions"]
-                        dones_dset[:] = self._data["dones"]
-                        returns_dset[:] = self._data["returns"]
-                        targets_dset[:] = self._data["targets"]
+                #     else:
+                #         self._resize_dset = True
+                #         states_dset[:, :] = self._data["states"]
+                #         actions_dset[:] = self._data["actions"]
+                #         dones_dset[:] = self._data["dones"]
+                #         returns_dset[:] = self._data["returns"]
+                #         targets_dset[:] = self._data["targets"]
 
-                # Free up memory
-                for k in self._data:
-                    self._data[k] = []
+                # # Free up memory
+                # for k in self._data:
+                #     self._data[k] = []
 
             for idx in range(self.hparams.batch_size):
                 yield batch_states[idx], batch_actions[idx], returns[idx], batch_targets[idx]
