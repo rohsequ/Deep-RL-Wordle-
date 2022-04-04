@@ -42,11 +42,11 @@ class SumChars(nn.Module):
 
     def forward(self, x):
         y = self.f0(x.float())
-        actor_a = torch.clamp(torch.log_softmax(
-            torch.tensordot(self.actor_head(y),
-                            self.words.to(self.get_device(y)),
-                            dims=((1,), (0,))),
-            dim=-1), min=-15, max=0)
+
+        # Currently outputting the logprobs of all the possible words in the dictionary
+        # Instead, output character level logprobs
+        # So, effectively, the 26 * WORDLE_N dimensional vector output of the actor_head
+        actor_a = self.actor_head(y)
         critic_c = self.critic_head(y)
 
         self.count +=1

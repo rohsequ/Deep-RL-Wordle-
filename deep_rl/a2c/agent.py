@@ -5,6 +5,7 @@ import torch
 from torch import nn
 from torch.distributions import Categorical
 import re
+from wordle.const import WORDLE_N
 
 class ActorCriticAgent:
     """Actor-Critic based agent that returns an action based on the networks policy."""
@@ -22,38 +23,29 @@ class ActorCriticAgent:
         Returns:
             action defined by policy
         """
+        # Here, the logprobs are of (batch_size, 26 * WORDLE_N) shape. They give character_level logprobs
         logprobs, _ = self.net(torch.tensor(np.array([states]), device=device))
         probabilities = logprobs.exp().squeeze(dim=-1)
         prob_np = probabilities.data.cpu().numpy()
 
-        pattern = None
-        # Modify the word list based on allowed words pattern:
-        if pattern is not None:
-            temp_allowed_words_index = []
-            new_word_list = []
-            for i in range(len(self.allowed_word_list)):
-                match = re.search(pattern, self.allowed_word_list[i])
-                if match:
-                    temp_allowed_words_index.append(i)
-                    new_word_list.append(self.allowed_word_list[i])
-            # import pdb;pdb.set_trace() 
-            # self.allowed_word_list = new_word_list            # UNCOMMENT TO REDUCE THE ALLOWED WORD LIST. DO IT ONLY FOR FULL WORD LIST
-            prob_np = prob_np[:,temp_allowed_words_index]
-            prob_np = prob_np/np.sum(prob_np)                   
+        # Here, prob_np should be of shape (batch_size, 26 * WORDLE_N)
+        # Reshape it to be (batch_size, WORDLE_N, 26)
+        prob_np = np.reshape(prob_np, (-1, WORDLE_N, 26))
 
-        # take the numpy values and randomly select action based on prob distribution
+        # TODO: Change this to select characters based on the probabilities
+        # take the numpy values and randomly select characters based on prob distribution
         # Note that this is much faster than numpy.random.choice
-        cdf = np.cumsum(prob_np, axis=1)
-        cdf[:, -1] = 1.  # Ensure cumsum adds to 1
-        select = np.random.random(cdf.shape[0])
+        cdf = np.cumsum(prob_np, axis=-1)
+        cdf[:, :, -1] = 1.  # Ensure cumsum adds to 1
+        select = np.random.random((cdf.shape[0], cdf.shape[1]))
         actions = [
-            np.searchsorted(cdf[row, :], select[row])
-            for row in range(cdf.shape[0])
+            np.searchsorted(cdf[row, col, :], select[row, col])
+            for row in range(cdf.shape[0]) for col in range(cdf.shape[1])
         ]
-        if pattern is not None:
-            return [temp_allowed_words_index[actions[0]]]
-        else:
-            return actions
+
+        # TODO: Check the shape of actions. Would have to reshape it to give a five letter word
+
+        return actions
 
 class ActorCategorical(nn.Module):
     """Policy network, for discrete action spaces, which returns a distribution and an action given an
@@ -92,24 +84,9 @@ class GreedyActorCriticAgent:
         logprobs, _ = self.net(torch.tensor([states], device=device))
         probabilities = logprobs.exp().squeeze(dim=-1)
         prob_np = probabilities.data.cpu().numpy()
-
-        # Modify the word list based on allowed words pattern:
-        if pattern is not None:
-            temp_allowed_words_index = []
-            new_word_list = []
-            for i in range(len(self.allowed_word_list)):
-                match = re.search(pattern, self.allowed_word_list[i])
-                if match:
-                    temp_allowed_words_index.append(i)
-                    new_word_list.append(self.allowed_word_list[i])
-            # import pdb;pdb.set_trace() 
-            # self.allowed_word_list = new_word_list
-            prob_np = prob_np[:,temp_allowed_words_index]
         
         # import pdb;pdb.set_trace()
+        # TODO: Change this to character level rl
         actions = np.argmax(prob_np, axis=1)    
         
-        if pattern is not None:
-            return [temp_allowed_words_index[actions[0]]]
-        else:
-            return list(actions)
+        return list(actions)

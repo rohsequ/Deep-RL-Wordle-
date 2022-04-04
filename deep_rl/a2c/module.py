@@ -153,8 +153,8 @@ class AdvantageActorCritic(LightningModule):
             for _ in range(self.hparams.batch_size):
                 dict_reduction_pattern = self.env.get_dict_reduce_pattern()
                 action = self.agent(self.state, self.device, dict_reduction_pattern)[0]
-                if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
-                    action = self._cheat_word
+                # if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
+                #     action = self._cheat_word
 
                 next_state, reward, done, aux = self.env.step(action)
 
