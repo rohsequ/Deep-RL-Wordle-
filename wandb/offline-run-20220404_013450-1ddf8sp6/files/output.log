@@ -1,0 +1,10 @@
+
+Epoch 0: : 1483it [01:08, 21.80it/s, loss=0.435, v_num=1, train_loss:=0.477, loss_ratio:=0.938, avg_winning_turns:=3.620, unique_words_used:=100.0]
+C:\Users\rohan\.conda\envs\wordle_env\lib\site-packages\pytorch_lightning\loops\utilities.py:91: PossibleUserWarning: `max_epochs` was not set. Setting it to 1000 epochs. To train without an epoch limit, set `max_epochs=-1`.
+  rank_zero_warn(
+C:\Users\rohan\.conda\envs\wordle_env\lib\site-packages\pytorch_lightning\trainer\connectors\data_connector.py:240: PossibleUserWarning: The dataloader, train_dataloader, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 12 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+C:\Users\rohan\.conda\envs\wordle_env\lib\site-packages\pytorch_lightning\trainer\connectors\logger_connector\result.py:229: UserWarning: You called `self.log('unique_words_used:', ...)` in your `training_step` but the value needs to be floating point. Converting it to torch.float32.
+  warning_cache.warn(
+C:\Users\rohan\.conda\envs\wordle_env\lib\site-packages\pytorch_lightning\trainer\trainer.py:727: UserWarning: Detected KeyboardInterrupt, attempting graceful shutdown...
+  rank_zero_warn("Detected KeyboardInterrupt, attempting graceful shutdown...")

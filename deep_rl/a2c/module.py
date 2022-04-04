@@ -325,9 +325,9 @@ class AdvantageActorCritic(LightningModule):
         # Compute loss to backprop
         loss = self.loss(states, actions, returns)
         
-        #Calculate the Unique words used from actions
-        self.unique_words_used.update(actions.tolist())
-        # import pdb;pdb.set_trace()
+        # #Calculate the Unique words used from actions
+        # self.unique_words_used.update(actions.tolist())
+        # # import pdb;pdb.set_trace()
 
         if self.global_step % 200 == 0:
             metrics = {
@@ -342,15 +342,12 @@ class AdvantageActorCritic(LightningModule):
                 "global_step": self.global_step,
                 "Unique Words used" : len(self.unique_words_used),
             }
-            if self._losses:
+
+            if self._wins > 0:
                 self.log("train_loss:", loss, prog_bar=True)
                 self.log("loss_ratio:", self._losses/(self._wins+self._losses), prog_bar=True)
                 self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
-                self.log("total wins:", self._total_wins, prog_bar=True)
-                self.log("total losses:", self._total_losses, prog_bar=True)
                 self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
-
-            if self._wins > 0:
                 metrics["reward_per_win"] = self._winning_rewards / self._wins
                 metrics["avg_winning_turns"] = self._winning_steps / self._wins
 
