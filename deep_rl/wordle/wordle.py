@@ -13,19 +13,29 @@ from wordle.const import *
 CUR_PATH = os.environ.get('PYTHONPATH', '.')
 import os
 dirname = os.path.dirname(__file__)
-VALID_WORDS_PATH = f'{dirname}/../../data/words.csv'
+# VALID_WORDS_PATH = f'{dirname}/../../data/words.csv'
+VALID_WORDS_PATH = f'{dirname}/../../data/wordle_words.txt'
 
+
+# def _load_words(limit: Optional[int]=None) -> List[str]:
+#     w_bank = pd.read_csv(VALID_WORDS_PATH)
+#     w_bank = w_bank[w_bank['words'].str.len() == WORDLE_N]
+#     lines = w_bank['words'].str.upper().tolist()
+#     # random.shuffle(lines)
+
+#     if not limit:
+#         return lines
+#     else:
+#         return lines[:limit]
 
 def _load_words(limit: Optional[int]=None) -> List[str]:
-    w_bank = pd.read_csv(VALID_WORDS_PATH)
-    w_bank = w_bank[w_bank['words'].str.len() == WORDLE_N]
-    lines = w_bank['words'].str.upper().tolist()
-    random.shuffle(lines)
+    with open(VALID_WORDS_PATH, 'r') as f:
+        lines = [x.strip().upper() for x in f.readlines()]
+        if not limit:
+            return lines
+        else:
+            return lines[:limit]
 
-    if not limit:
-        return lines
-    else:
-        return lines[:limit]
 
 class WordleEnvBase(gym.Env):
     """
@@ -109,9 +119,8 @@ class WordleEnvBase(gym.Env):
                 if col == GREEN:
                     self.reward += GREEN_REWARD
                     self.color_vec[cint] = col
-            
 
-        if action == self.goal_word:
+        if action_word == self.words[self.goal_word]:
             self.done = True
             #reward = REWARD
             if wordle.state.remaining_steps(self.state) == self.max_turns-1:
@@ -217,7 +226,7 @@ class WordleEnv100(WordleEnvBase):
 
 class WordleEnv100OneAction(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(100), allowable_words=1, max_turns=6)
+        super().__init__(words=_load_words(100), allowable_words=1, max_turns=6, word_n=5)
 
 
 class WordleEnv100WithMask(WordleEnvBase):
@@ -228,7 +237,7 @@ class WordleEnv100WithMask(WordleEnvBase):
 
 class WordleEnv100TwoAction(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(100), allowable_words=2, max_turns=6)
+        super().__init__(words=_load_words(100), allowable_words=2, max_turns=6, word_n=5)
 
 
 class WordleEnv100FullAction(WordleEnvBase):

@@ -73,7 +73,7 @@ class GreedyActorCriticAgent:
         self.net = net
         self.allowed_word_list = word_list
 
-    def __call__(self, states: torch.Tensor, device: str, pattern: str) -> List[int]:
+    def __call__(self, states: torch.Tensor, device: str) -> List[int]:
         """Takes in the current state and returns the action based on the agents policy.
         Args:
             states: current state of the environment
@@ -90,7 +90,5 @@ class GreedyActorCriticAgent:
         prob_np = np.reshape(prob_np, (-1, WORDLE_N, 26))
 
         actions = np.argmax(prob_np, axis=-1)
-
-        # TODO: Check the shape of actions
 
         return list(actions)

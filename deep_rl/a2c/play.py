@@ -4,7 +4,7 @@ import wordle.state
 from a2c.agent import GreedyActorCriticAgent
 from a2c.module import AdvantageActorCritic
 from wordle.wordle import WordleEnvBase
-
+from wordle.const import int2char
 
 def load_from_checkpoint(
         checkpoint: str,
@@ -60,10 +60,10 @@ def goal(
     outcomes = []
     win = False
     for i in range(env.max_turns):
-        dict_reduction_pattern = env.get_dict_reduce_pattern()
-        action = agent(state, "cpu", pattern=dict_reduction_pattern)[0]
+        # dict_reduction_pattern = env.get_dict_reduce_pattern()
+        action = agent(state, "cpu")[0]
         state, reward, done, _ = env.step(action)
-        outcomes.append((env.words[action], reward))
+        outcomes.append((''.join(int2char[a] for a in action), reward))
         if done:
             if reward >= 0:
                 win = True
