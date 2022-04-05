@@ -1,7 +1,7 @@
 
 
 WORDLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-#WORDLE_N = 5
+WORDLE_N = wordle_len_var
 ######################
 #  Color codes used
 ######################
