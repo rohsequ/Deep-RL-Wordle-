@@ -1,7 +1,7 @@
 
 
 WORDLE_CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-WORDLE_N = 5
+WORDLE_N = NONE
 ######################
 #  Color codes used
 ######################
