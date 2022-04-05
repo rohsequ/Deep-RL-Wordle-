@@ -17,6 +17,7 @@ TESTWORDS = [
     "CPPAC",
     "CPPAD",
 ]
+word_len_var = None
 
 @pytest.fixture
 def wordleEnv():
@@ -72,7 +73,7 @@ def test_win_reward_6(wordleEnv):
     wordleEnv.reset(seed=13)
     goal = wordleEnv.goal_word
 
-    for i in range(5):
+    for i in range(word_len_var):
         new_state, reward, done, _ = wordleEnv.step((goal+1)%len(wordleEnv.words))
 
     new_state, reward, done, _ = wordleEnv.step(goal)
@@ -115,8 +116,8 @@ def test_step(wordleEnv):
     assert wordle.state.remaining_steps(cur_state) == wordleEnv.max_turns
     assert wordle.state.remaining_steps(new_state) == wordleEnv.max_turns-1
     # Expect B to be all 1,0,0
-    offset = 1+26+3*5*(ord('B')-ord('A'))
-    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*5)
+    offset = 1+26+3*word_len_var*(ord('B')-ord('A'))
+    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*word_len_var)
 
     # Expect A to be right in position 0 4 and maybe otherwise
     offset = 1+26
@@ -127,7 +128,7 @@ def test_step(wordleEnv):
                                                   0,1,0)
 
     # Expect P to be right in position 2 3 and maybe otherwise
-    offset = 1 +26+ 3*5*(ord('P') - ord('A'))
+    offset = 1 +26+ 3*word_len_var*(ord('P') - ord('A'))
     assert tuple(new_state[offset:offset+15]) == (1,0,0,
                                                   0,0,1,
                                                   0,0,1,
@@ -135,7 +136,7 @@ def test_step(wordleEnv):
                                                   0,1,0)
 
     # Expect C to be maybes
-    offset = 1 +26+ 3*5*(ord('C') - ord('A'))
+    offset = 1 +26+ 3*word_len_var*(ord('C') - ord('A'))
     assert tuple(new_state[offset:offset+15]) == (1,0,0,
                                                   1,0,0,
                                                   1,0,0,
@@ -146,8 +147,8 @@ def test_step(wordleEnv):
     assert wordle.state.remaining_steps(cur_state) == wordleEnv.max_turns-1
     assert wordle.state.remaining_steps(new_state) == wordleEnv.max_turns-2
     # Expect B to be all 1,0,0
-    offset = 1+26+3*5*(ord('B')-ord('A'))
-    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*5)
+    offset = 1+26+3*word_len_var*(ord('B')-ord('A'))
+    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*word_len_var)
 
     # Expect A to be right in position 0 4 and maybe otherwise
     offset = 1+26
@@ -158,7 +159,7 @@ def test_step(wordleEnv):
                                                   0,1,0)
 
     # Expect P to be right in position 2 3 and maybe otherwise
-    offset = 1+26 + 3*5*(ord('P') - ord('A'))
+    offset = 1+26 + 3*word_len_var*(ord('P') - ord('A'))
     assert tuple(new_state[offset:offset+15]) == (1,0,0,
                                                   0,0,1,
                                                   0,0,1,
@@ -168,12 +169,12 @@ def test_step(wordleEnv):
     new_state, reward, done, _ = wordleEnv.step(2)
     assert wordle.state.remaining_steps(new_state) == wordleEnv.max_turns-3
     # Expect B to be all 1,0,0
-    offset = 1+26+3*5*(ord('B')-ord('A'))
-    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*5)
+    offset = 1+26+3*word_len_var*(ord('B')-ord('A'))
+    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*word_len_var)
 
     # Expect C to be all 1,0,0
-    offset = 1+26+3*5*(ord('C')-ord('A'))
-    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*5)
+    offset = 1+26+3*word_len_var*(ord('C')-ord('A'))
+    assert tuple(new_state[offset:offset+15]) == tuple([1, 0, 0]*word_len_var)
 
     # Expect A to be right in position 0 4 and maybe otherwise
     offset = 1+26
@@ -184,7 +185,7 @@ def test_step(wordleEnv):
                                                   0,1,0)
 
     # Expect P to be right in position 2 3 and maybe otherwise
-    offset = 1+26 + 3*5*(ord('P') - ord('A'))
+    offset = 1+26 + 3*word_len_var*(ord('P') - ord('A'))
     assert tuple(new_state[offset:offset+15]) == (1,0,0,
                                                   0,0,1,
                                                   0,0,1,
