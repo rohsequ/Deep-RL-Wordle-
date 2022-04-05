@@ -191,19 +191,19 @@ class WordleEnvBase(gym.Env):
         return self.pattern
 
 
-class WordleEnv10_4(WordleEnvBase):
-    def __init__(self):
-        super().__init__(words=_load_words(10), max_turns=5, word_n=4)
+#class WordleEnv10_4(WordleEnvBase):
+#    def __init__(self):
+#        super().__init__(words=_load_words(10), max_turns=5, word_n=4)
 
 
 class WordleEnv10(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(10), max_turns=6, word_n=5)
+        super().__init__(words=_load_words(10), max_turns=6, word_n=word_len_var)
 
 
 class WordleEnv100(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(100), max_turns=6, word_n=5)
+        super().__init__(words=_load_words(100), max_turns=6, word_n=word_len_var)
 
 
 class WordleEnv100OneAction(WordleEnvBase):
@@ -229,7 +229,7 @@ class WordleEnv100FullAction(WordleEnvBase):
 
 class WordleEnv1000(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(1000), max_turns=6, word_n=5)
+        super().__init__(words=_load_words(1000), max_turns=6, word_n=word_len_var)
 
 
 class WordleEnv1000WithMask(WordleEnvBase):
@@ -245,7 +245,7 @@ class WordleEnv1000FullAction(WordleEnvBase):
 
 class WordleEnvFull(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(), max_turns=6, word_n=5)
+        super().__init__(words=_load_words(), max_turns=6, word_n=word_len_var)
 
 
 class WordleEnvReal(WordleEnvBase):
@@ -260,4 +260,4 @@ class WordleEnvRealWithMask(WordleEnvBase):
 
 class WordleEnv5000(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(5000), max_turns=6, word_n=5)
+        super().__init__(words=_load_words(5000), max_turns=6, word_n=word_len_var)
