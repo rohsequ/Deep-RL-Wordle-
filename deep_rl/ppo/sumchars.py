@@ -14,7 +14,7 @@ class SumChars(nn.Module):
         """
 
         super().__init__()
-        word_width = 26*5
+        word_width = 26*word_len_var
         layers = [
             nn.Linear(obs_size, hidden_size),
             nn.ReLU(),
