@@ -322,9 +322,9 @@ class AdvantageActorCritic(LightningModule):
         logprobs = logprobs[range(self.hparams.batch_size * WORDLE_N), actions.flatten()]
         logprobs = logprobs.view(self.hparams.batch_size, WORDLE_N)
 
-        import pdb; pdb.set_trace()
+        # import pdb; pdb.set_trace()
 
-        actor_loss = -(logprobs * advs).mean()
+        actor_loss = -(logprobs.sum(-1) * advs).mean()
 
         # critic loss
         critic_loss = self.hparams.critic_beta * torch.square(targets - values).mean()
@@ -349,7 +349,7 @@ class AdvantageActorCritic(LightningModule):
         loss = self.loss(states, actions, returns)
         
         #Calculate the Unique words used from actions
-        self.unique_words_used.update(actions.tolist())
+        # self.unique_words_used.update(actions.tolist())
         # import pdb;pdb.set_trace()
 
         if self.global_step % 200 == 0:
@@ -368,7 +368,7 @@ class AdvantageActorCritic(LightningModule):
             if self._losses:
                 self.log("train_loss:", loss, prog_bar=True)
                 self.log("loss_ratio:", self._losses/(self._wins+self._losses), prog_bar=True)
-                self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
+                # self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
                 self.log("total wins:", self._total_wins, prog_bar=True)
                 self.log("total losses:", self._total_losses, prog_bar=True)
                 # self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
@@ -383,14 +383,14 @@ class AdvantageActorCritic(LightningModule):
             def get_game_string(seq):
                 game = f'goal: {self.env.words[seq[0].goal_id]}\n'
                 for i, exp in enumerate(seq):
-                    game += f'{i}: {self.env.words[exp.action]}\n'
+                    game += f'{i}: ' + ''.join(self.int2char[a] for a in exp.action) + '\n'
                 return game
 
             def get_table_row(seq):
                 goal = self.env.words[seq[0].goal_id]
                 guesses = ""
                 for i, exp in enumerate(seq):
-                    guesses += f'{i}: {self.env.words[exp.action]} '
+                    guesses += f'{i}: ' + ''.join(self.int2char[a] for a in exp.action) + ' '
                 return [goal, guesses]
 
             if len(self._last_win):
