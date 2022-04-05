@@ -1,4 +1,4 @@
-from collections import OrderedDict
+# from collections import OrderedDict
 import os
 from typing import Optional, List 
 
@@ -13,7 +13,7 @@ from wordle.const import *
 CUR_PATH = os.environ.get('PYTHONPATH', '.')
 import os
 dirname = os.path.dirname(__file__)
-VALID_WORDS_PATH = f'{dirname}\..\..\data\words.csv'
+VALID_WORDS_PATH = f'{dirname}/../../data/words.csv'
 
 
 def _load_words(limit: Optional[int]=None) -> List[str]:
@@ -51,7 +51,9 @@ class WordleEnvBase(gym.Env):
         if not self.allowable_words:
             self.allowable_words = len(self.words)
 
-        self.action_space = spaces.Discrete(len(self.words))
+        # self.action_space = spaces.Discrete(len(self.words))
+
+        self.action_space = spaces.MultiDiscrete([len(WORDLE_CHARS)] * WORDLE_N)
         self.observation_space = spaces.MultiDiscrete(wordle.state.get_nvec(self.max_turns))
 
         # Rewards Calculations 
@@ -67,10 +69,15 @@ class WordleEnvBase(gym.Env):
         self.state: wordle.state.WordleState = None
         self.state_updater = wordle.state.update
 
+        self.int2char = {k: c for k, c in enumerate(WORDLE_CHARS)}
         
         # import pdb;pdb.set_trace()
 
-    def step(self, action: int):
+    def step(self, action: list[int]):
+        """
+        Here action should be a list of length WORDLE_N, giving the integer of the character at each position 
+        """
+        
         if self.done:
             raise ValueError(
                 "You are calling 'step()' even though this "
@@ -78,13 +85,16 @@ class WordleEnvBase(gym.Env):
                 "should always call 'reset()' once you receive 'done = "
                 "True' -- any further steps are undefined behavior."
             )
+        
+        action_word = ''.join(self.int2char[a] for a in action)
+
         self.state, self.color = self.state_updater(state=self.state,
-                                        word=self.words[action],
+                                        word=action_word,
                                         goal_word=self.words[self.goal_word])
 
-        self.set_dict_reduce_pattern(self.words[action])
+        # self.set_dict_reduce_pattern(self.words[action])
 
-        for char, col in zip(self.words[action], self.color):
+        for char, col in zip(action_word, self.color):
             cint = ord(char) - ord(WORDLE_CHARS[0])
             if self.color_vec[cint] == 0:
                 if col == GREEN:
@@ -126,7 +136,6 @@ class WordleEnvBase(gym.Env):
 
         return self.state.copy(), self.reward, self.done, {"goal_id": self.goal_word}
 
-
     def reset(self, seed: Optional[int] = None):
         self.state = wordle.state.new(self.max_turns)
         self.done = False
@@ -148,47 +157,47 @@ class WordleEnvBase(gym.Env):
     def get_dict_reduce_pattern(self):
         return self.pattern
     
-    def set_dict_reduce_pattern(self, action):
-        color_invert = OrderedDict()
-        unique_letters = {''}
-        for k, v in (zip(action, self.color)):
-            if v not in color_invert.keys():
-                unique_letters.add(k)
-                if v == YELLOW:
-                    color_invert[v] = f"(?=.*{k}.*)"
-                if v == GREY:
-                    color_invert[v] = f"[^{k}<next>]"
-            else:
-                if k not in unique_letters:
-                    unique_letters.add(k)
-                    if v == YELLOW:
-                        color_invert[v]+=(f"(?=.*{k}.*)")
-                    if v == GREY:
-                        color_invert[v] = color_invert[v].replace("<next>", f"{k}<next>")
+    # def set_dict_reduce_pattern(self, action):
+    #     color_invert = OrderedDict()
+    #     unique_letters = {''}
+    #     for k, v in (zip(action, self.color)):
+    #         if v not in color_invert.keys():
+    #             unique_letters.add(k)
+    #             if v == YELLOW:
+    #                 color_invert[v] = f"(?=.*{k}.*)"
+    #             if v == GREY:
+    #                 color_invert[v] = f"[^{k}<next>]"
+    #         else:
+    #             if k not in unique_letters:
+    #                 unique_letters.add(k)
+    #                 if v == YELLOW:
+    #                     color_invert[v]+=(f"(?=.*{k}.*)")
+    #                 if v == GREY:
+    #                     color_invert[v] = color_invert[v].replace("<next>", f"{k}<next>")
 
-        if YELLOW not in color_invert.keys():
-            color_invert[YELLOW] = ""
-        if GREY not in color_invert.keys():
-            color_invert[GREY] = "[A-Z]"
-        else:
-            color_invert[GREY] = color_invert[GREY].replace("<next>","")
+    #     if YELLOW not in color_invert.keys():
+    #         color_invert[YELLOW] = ""
+    #     if GREY not in color_invert.keys():
+    #         color_invert[GREY] = "[A-Z]"
+    #     else:
+    #         color_invert[GREY] = color_invert[GREY].replace("<next>","")
 
-        self.pattern = "<green_grey_letters><yellow_letters>"
-        word_pattern = "(?=<word>)"
+    #     self.pattern = "<green_grey_letters><yellow_letters>"
+    #     word_pattern = "(?=<word>)"
 
 
-        for key, val in (zip(action, self.color)):
-            if val == GREEN:
-                word_pattern = word_pattern.replace("<word>", f"[{key}]<word>")
-            if val == YELLOW:
-                word_pattern = word_pattern.replace("<word>", f"{color_invert[GREY]}<word>")
-            if val == GREY:
-                word_pattern = word_pattern.replace("<word>", f"{color_invert[GREY]}<word>")
+    #     for key, val in (zip(action, self.color)):
+    #         if val == GREEN:
+    #             word_pattern = word_pattern.replace("<word>", f"[{key}]<word>")
+    #         if val == YELLOW:
+    #             word_pattern = word_pattern.replace("<word>", f"{color_invert[GREY]}<word>")
+    #         if val == GREY:
+    #             word_pattern = word_pattern.replace("<word>", f"{color_invert[GREY]}<word>")
 
-        word_pattern = word_pattern.replace("<word>", "")
-        self.pattern = self.pattern.replace("<green_grey_letters>", word_pattern)
-        self.pattern = self.pattern.replace("<yellow_letters>", f"{color_invert[YELLOW]}")
-        return self.pattern
+    #     word_pattern = word_pattern.replace("<word>", "")
+    #     self.pattern = self.pattern.replace("<green_grey_letters>", word_pattern)
+    #     self.pattern = self.pattern.replace("<yellow_letters>", f"{color_invert[YELLOW]}")
+    #     return self.pattern
 
 
 class WordleEnv10_4(WordleEnvBase):

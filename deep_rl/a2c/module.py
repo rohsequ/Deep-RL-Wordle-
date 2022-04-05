@@ -17,6 +17,7 @@ import a2c
 import wordle.state
 from a2c.agent import ActorCriticAgent
 from a2c.experience import ExperienceSourceDataset, Experience
+from wordle.const import WORDLE_CHARS
 
 # import h5py
 
@@ -100,6 +101,8 @@ class AdvantageActorCritic(LightningModule):
 
         self.state = self.env.reset()
 
+        self.int2char = {k: c for k, c in enumerate(WORDLE_CHARS)}
+
         # For collecting data
         # self._num_batches_before_clear = 10
         # self._resize_dset = False
@@ -133,7 +136,7 @@ class AdvantageActorCritic(LightningModule):
         logprobs, values = self.net(torch.tensor(np.array([x]), device=self.device))
         return logprobs, values
 
-    def train_batch(self) -> Iterator[Tuple[np.ndarray, int, Tensor]]:
+    def train_batch(self) -> Iterator[Tuple[np.ndarray, list[int], Tensor]]:
         """Contains the logic for generating a new batch of data to be passed to the DataLoader.
         Returns:
             yields a tuple of Lists containing tensors for
@@ -151,8 +154,12 @@ class AdvantageActorCritic(LightningModule):
             batch_masks = []
             batch_targets = []
             for _ in range(self.hparams.batch_size):
-                dict_reduction_pattern = self.env.get_dict_reduce_pattern()
-                action = self.agent(self.state, self.device, dict_reduction_pattern)[0]
+                # dict_reduction_pattern = self.env.get_dict_reduce_pattern()
+                action = self.agent(self.state, self.device)[0]
+                # TODO: Check action. Should be a list of 5 ints between 0 and 25
+
+                action_word = ''.join(self.int2char[a] for a in action)
+
                 # if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
                 #     action = self._cheat_word
 
@@ -169,7 +176,7 @@ class AdvantageActorCritic(LightningModule):
                 self.episode_reward += reward
 
                 if done:
-                    if action == self.env.goal_word:
+                    if action_word == self.env.words[self.env.goal_word]:
                         self._winning_steps += self.env.max_turns - wordle.state.remaining_steps(self.state)
                         self._wins += 1
                         self._total_wins += 1
@@ -180,6 +187,7 @@ class AdvantageActorCritic(LightningModule):
                         self._total_losses += 1
                         self._last_loss = self._seq
                         self._recent_losing_words.append(aux['goal_id'])
+
                     self._seq = []
                     self._total_rewards += self.episode_reward
 
@@ -285,7 +293,7 @@ class AdvantageActorCritic(LightningModule):
         (for exploration)
         Args:
             states: tensor of shape (batch_size, state dimension)
-            actions: tensor of shape (batch_size, )
+            actions: tensor of shape (batch_size, action_dimension)
             returns: tensor of shape (batch_size, )
         """
 
@@ -305,6 +313,11 @@ class AdvantageActorCritic(LightningModule):
         entropy = self.hparams.entropy_beta * entropy.sum(1).mean()
 
         # actor loss
+        # TODO: Change this
+        # Here, actions is a list of 5 tensors, each tensor is of dimension (batch_size, )
+        # How do we select the logprobs corresponding to these actions?
+        # logprobs is of shape (batch_size, 5, 26)
+        import pdb; pdb.set_trace()
         logprobs = logprobs[range(len(actions)), actions]
         actor_loss = -(logprobs * advs).mean()
 
@@ -348,7 +361,7 @@ class AdvantageActorCritic(LightningModule):
                 self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
                 self.log("total wins:", self._total_wins, prog_bar=True)
                 self.log("total losses:", self._total_losses, prog_bar=True)
-                self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
+                # self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
 
             if self._wins > 0:
                 metrics["reward_per_win"] = self._winning_rewards / self._wins

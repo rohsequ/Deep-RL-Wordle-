@@ -38,7 +38,7 @@ def cli_main() -> None:
 
         seed_everything(123)
 
-        trainer = Trainer.from_argparse_args(args, deterministic=True, callbacks=checkpoint_callback, accelerator="gpu", devices=1)
+        trainer = Trainer.from_argparse_args(args, callbacks=checkpoint_callback)
         # trainer = Trainer.from_argparse_args(args, deterministic=True, callbacks=checkpoint_callback)
         trainer.fit(model)
 
