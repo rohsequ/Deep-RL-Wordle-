@@ -25,7 +25,7 @@ def get_mask_from_state(state):
     letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
     num_letters = 26
-    word_len = 0 ####changed
+    word_len = word_len_var
     num_colors = 3
 
     used = []
