@@ -17,7 +17,7 @@ import a2c
 import wordle.state
 from a2c.agent import ActorCriticAgent
 from a2c.experience import ExperienceSourceDataset, Experience
-from wordle.const import WORDLE_CHARS
+from wordle.const import WORDLE_CHARS, WORDLE_N
 
 # import h5py
 
@@ -156,8 +156,6 @@ class AdvantageActorCritic(LightningModule):
             for _ in range(self.hparams.batch_size):
                 # dict_reduction_pattern = self.env.get_dict_reduce_pattern()
                 action = self.agent(self.state, self.device)[0]
-                # TODO: Check action. Should be a list of 5 ints between 0 and 25
-
                 action_word = ''.join(self.int2char[a] for a in action)
 
                 # if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
@@ -314,11 +312,18 @@ class AdvantageActorCritic(LightningModule):
 
         # actor loss
         # TODO: Change this
-        # Here, actions is a list of 5 tensors, each tensor is of dimension (batch_size, )
+        # Here, actions is a tensor of shape (batch_size, 5)
         # How do we select the logprobs corresponding to these actions?
         # logprobs is of shape (batch_size, 5, 26)
+        # logprobs_a should be of shape (batch_size, 5). Each of the 5 components corresponding to the action at that position
+
+        # logprobs = logprobs[range(len(actions)), actions]
+        logprobs = logprobs.view(-1, len(WORDLE_CHARS))
+        logprobs = logprobs[range(self.hparams.batch_size * WORDLE_N), actions.flatten()]
+        logprobs = logprobs.view(self.hparams.batch_size, WORDLE_N)
+
         import pdb; pdb.set_trace()
-        logprobs = logprobs[range(len(actions)), actions]
+
         actor_loss = -(logprobs * advs).mean()
 
         # critic loss
@@ -334,6 +339,11 @@ class AdvantageActorCritic(LightningModule):
             batch: a batch of (states, actions, returns)
         """
         states, actions, returns, goal_ids = batch
+
+        # Reshape to a tensor of shape (batch_size, 5)
+        actions = torch.cat(actions).view(WORDLE_N, -1).T
+
+        # import pdb; pdb.set_trace()
 
         # Compute loss to backprop
         loss = self.loss(states, actions, returns)
