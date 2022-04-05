@@ -17,7 +17,6 @@ TESTWORDS = [
     "CPPAC",
     "CPPAD",
 ]
-word_len_var = None
 
 @pytest.fixture
 def wordleEnv():
