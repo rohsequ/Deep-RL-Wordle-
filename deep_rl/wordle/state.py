@@ -6,9 +6,6 @@ from wordle.const import WORDLE_CHARS, WORDLE_N, GREEN, YELLOW, GREY, C_UNK
 
 WordleState = np.ndarray
 
-def set_wordle_word_len(word_len_var: int):
-    return WORDLE_N = word_len_var
-
 def get_nvec(max_turns: int):
     return [max_turns] + [2] * len(WORDLE_CHARS) + [4] * WORDLE_N * len(WORDLE_CHARS)
 
