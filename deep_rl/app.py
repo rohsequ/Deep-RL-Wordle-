@@ -35,9 +35,9 @@ def not_found(e):
 def hello():
     return {'msg': 'Hello world!'}
 
-def get_word_len(word_len: int):
-    word_len = input("Would You LIke To Play Wordle With 4, 5, or 6 Letters? :")
-    if word_len != 4 or word_len != 5 or word_len != 6:
+def get_word_len(word_len_var: int):
+    word_len_var = input("Would You LIke To Play Wordle With 4, 5, or 6 Letters? :")
+    if word_len_var != 4 or word_len_var != 5 or word_len_var != 6:
         return {"msg": "word length is invalid!"}, 400
         
 
