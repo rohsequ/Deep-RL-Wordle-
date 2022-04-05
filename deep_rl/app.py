@@ -38,7 +38,7 @@ def hello():
 def get_word_len(word_len_var: int):
     word_len_var = input("Would You LIke To Play Wordle With 4, 5, or 6 Letters? :")
     if word_len_var != 4 or word_len_var != 5 or word_len_var != 6:
-        return {"msg": "word length is invalid!"}, 400
+        sys.exit("word length is invalid!)                
         
 
 def _word_is_valid(word: str) -> bool:
