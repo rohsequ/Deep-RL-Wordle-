@@ -98,14 +98,24 @@ class WordleEnvBase(gym.Env):
         
         action_word = ''.join(self.int2char[a] for a in action)
 
+        # Before updating, check if we are using letters that are already black
+        # Add big negative rewards for that
+        for cint in action:
+            if self.state[1 + cint]: # Character has been used before
+                offset = 1 + len(WORDLE_CHARS) + cint
+                for i in range(WORDLE_N):
+                    if self.state[offset + len(WORDLE_CHARS) * i] == GREY:
+                        self.reward += -3
+                        break
+
         self.state, self.color = self.state_updater(state=self.state,
                                         word=action_word,
                                         goal_word=self.words[self.goal_word])
 
         # self.set_dict_reduce_pattern(self.words[action])
 
-        for char, col in zip(action_word, self.color):
-            cint = ord(char) - ord(WORDLE_CHARS[0])
+        for cint, col in zip(action, self.color):
+            # cint = ord(char) - ord(WORDLE_CHARS[0])
             if self.color_vec[cint] == 0:
                 if col == GREEN:
                     self.reward += GREEN_REWARD

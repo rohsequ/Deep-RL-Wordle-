@@ -102,6 +102,7 @@ class AdvantageActorCritic(LightningModule):
         self.state = self.env.reset()
 
         self.int2char = {k: c for k, c in enumerate(WORDLE_CHARS)}
+        self.char2int = {c: k for k, c in self.int2char.items()}
 
         # For collecting data
         # self._num_batches_before_clear = 10
@@ -158,8 +159,9 @@ class AdvantageActorCritic(LightningModule):
                 action = self.agent(self.state, self.device)[0]
                 action_word = ''.join(self.int2char[a] for a in action)
 
-                # if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
-                #     action = self._cheat_word
+                if wordle.state.remaining_steps(self.state) == 1 and np.random.random() < self.hparams.prob_cheat:
+                    action_word = self.env.words[self.env.goal_word]
+                    action = [self.char2int[c] for c in action_word]
 
                 next_state, reward, done, aux = self.env.step(action)
 

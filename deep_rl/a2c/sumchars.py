@@ -8,6 +8,9 @@ from torch import nn
 from wordle.const import *
 from wordle.const import WORDLE_N
 
+def init_normal(m):
+    if type(m) == nn.Linear:
+        nn.init.kaiming_normal_(m.weight)
 
 class SumChars(nn.Module):
     def __init__(self, obs_size: int, word_list: List[str], n_hidden: int = 1, hidden_size: int = 256):
@@ -21,15 +24,20 @@ class SumChars(nn.Module):
         word_width = 26*WORDLE_N
         layers = [
             nn.Linear(obs_size, hidden_size),
+            # nn.BatchNorm1d(hidden_size),
             nn.ReLU(),
         ]
         for _ in range(n_hidden):
             layers.append(nn.Linear(hidden_size, hidden_size))
+            # layers.append(nn.BatchNorm1d(hidden_size))
             layers.append(nn.ReLU())
+
         layers.append(nn.Linear(hidden_size, word_width))
+        # layers.append(nn.BatchNorm1d(word_width))
         layers.append(nn.ReLU())
 
         self.f0 = nn.Sequential(*layers)
+        # self.f0.apply(init_normal)
         word_array = np.zeros((word_width, len(word_list)))
         for i, word in enumerate(word_list):
             for j, c in enumerate(word):
@@ -37,7 +45,9 @@ class SumChars(nn.Module):
         self.words = torch.Tensor(word_array)
 
         self.actor_head = nn.Linear(word_width, word_width)
+        # self.actor_head.apply(init_normal)
         self.critic_head = nn.Linear(word_width, 1)
+        # self.critic_head.apply(init_normal)
         self.count = 0
 
     def forward(self, x):
