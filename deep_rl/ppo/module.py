@@ -238,6 +238,12 @@ class PPO(LightningModule):
             self.ep_values.append(value.item())
 
             self.state = next_state
+            
+            for _ in range(self.hparams.batch_size):
+                dict_reduction_pattern = self.env.get_dict_reduce_pattern()
+                action = self.agent(self.state, self.device, dict_reduction_pattern)[0]
+                if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
+                    action = self._cheat_word
 
             epoch_end = step == (self.steps_per_epoch - 1)
             terminal = len(self.ep_rewards) == self.max_episode_len
@@ -359,6 +365,8 @@ class PPO(LightningModule):
                 self.batch_qvals.clear()
                 self.batch_masks.clear()
                 self.batch_targets.clear()
+                
+                
 
                 # logging
                 self.avg_reward = sum(self.epoch_rewards) / self.steps_per_epoch
