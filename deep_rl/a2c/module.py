@@ -159,7 +159,9 @@ class AdvantageActorCritic(LightningModule):
                 action = self.agent(self.state, self.device)[0]
                 action_word = ''.join(self.int2char[a] for a in action)
 
-                if wordle.state.remaining_steps(self.state) == 1 and np.random.random() < self.hparams.prob_cheat:
+                # if wordle.state.remaining_steps(self.state) == 1 and np.random.random() < self.hparams.prob_cheat:
+                # if self.global_step < 20000 and np.random.random() < self.hparams.prob_cheat:
+                if np.random.random() < self.hparams.prob_cheat:
                     action_word = self.env.words[self.env.goal_word]
                     action = [self.char2int[c] for c in action_word]
 

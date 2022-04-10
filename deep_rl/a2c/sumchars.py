@@ -56,7 +56,7 @@ class SumChars(nn.Module):
         # Currently outputting the logprobs of all the possible words in the dictionary
         # Instead, output character level logprobs
         # So, effectively, the 26 * WORDLE_N dimensional vector output of the actor_head
-        actor_a = torch.log_softmax(self.actor_head(y).view(-1, WORDLE_N, len(WORDLE_CHARS)), dim=-1)
+        actor_a = torch.clamp(torch.log_softmax(self.actor_head(y).view(-1, WORDLE_N, len(WORDLE_CHARS)), dim=-1), min=-10, max=0)
         critic_c = self.critic_head(y)
 
         self.count +=1

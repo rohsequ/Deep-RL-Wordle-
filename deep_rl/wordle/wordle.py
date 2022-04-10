@@ -49,7 +49,7 @@ class WordleEnvBase(gym.Env):
                  word_n: int,
                  max_turns: int,
                  allowable_words: Optional[int] = None):
-                 
+
         global WORDLE_N
         WORDLE_N = word_n
 
@@ -80,8 +80,6 @@ class WordleEnvBase(gym.Env):
         self.state_updater = wordle.state.update
 
         self.int2char = {k: c for k, c in enumerate(WORDLE_CHARS)}
-        
-        # import pdb;pdb.set_trace()
 
     def step(self, action: list[int]):
         """
@@ -173,8 +171,8 @@ class WordleEnvBase(gym.Env):
     def set_goal_id(self, goal_id: int):
         self.goal_word = goal_id
     
-    def get_dict_reduce_pattern(self):
-        return self.pattern
+    # def get_dict_reduce_pattern(self):
+    #     return self.pattern
     
     # def set_dict_reduce_pattern(self, action):
     #     color_invert = OrderedDict()
