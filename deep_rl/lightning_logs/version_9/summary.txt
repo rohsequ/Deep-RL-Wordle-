@@ -1,0 +1,48 @@
+wandb: Waiting for W&B process to finish, PID 1079845... (success).
+wandb: Run history:
+wandb:    Unique Words used ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:    avg_winning_turns ▄▁▂▂▁▂▂▁▂▂▂▂▂▁▃▃▃▄▅▅▅▇▇███▇▇▇▇▅▅▄▆██▆▆▆▅
+wandb:          global_step ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:           lose_ratio ▇██████████████▇▇▇▇▇▇▆▆▆▅▅▅▃▅▃▂▂▂▁▅▆▃▃▁▅
+wandb:               losses ▁██████████████████▇▇▇▇▇▇▆▆▆▇▅▅▅▅▄▇▇▅▅▄▇
+wandb:      reward_per_game ▁▁▁▁▁▁▁▁▁▁▁▁▂▂▂▂▂▂▂▃▃▃▄▄▄▅▅▆▄▇▇▇▇█▄▄▆▆█▄
+wandb:       reward_per_win ▂▁▁▁▁▁▁▁▂▁▁▂▂▂▂▂▂▃▃▄▄▅▅▅▆▆▆▇▆▇▇▇▇█▆▅█▇█▆
+wandb:   total_games_played ▁▁▁▁▂▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇███
+wandb:         total_losses ▁▁▁▂▂▂▂▂▃▃▃▃▄▄▄▄▄▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇▇▇▇████
+wandb:           total_wins ▁▁▁▁▁▂▂▂▂▂▂▂▂▂▂▃▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▆▆▆▇▇▇▇██
+wandb:           train_loss ▇▆▇▆▇▆█▇▇▇█▆▆▇▇█▇▅▇▆▇▇▇▇▅▅▅▃▃▃▄▅▄▄▃▇▁▃▂▅
+wandb:                 wins ▁▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▃▄▄▄▄▄▄▅▅▅▆▅▆▇▇▇█▅▄▆▆█▅
+wandb: 
+wandb: Run summary:
+wandb:    Unique Words used 1
+wandb:    avg_winning_turns 3.60818
+wandb:          global_step 19800
+wandb:           lose_ratio 0.56635
+wandb:               losses 5843
+wandb:      reward_per_game 8.32131
+wandb:       reward_per_win 48.24061
+wandb:   total_games_played 1016232
+wandb:         total_losses 588075
+wandb:           total_wins 428157
+wandb:           train_loss -0.17117
+wandb:                 wins 4474
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync /home/shreyas/EECS545/current-code/Deep-RL-Wordle-/deep_rl/wandb/offline-run-20220410_004542-38k59lh4
+wandb: Find logs at: ./wandb/offline-run-20220410_004542-38k59lh4/logs/debug.log
+wandb: 
+Epoch 0: : 19911it [43:36,  7.61it/s, loss=-0.473, v_num=9, train_loss:=-.171, loss_ratio:=0.566, total wins:=4.28e+5, total losses:=5.88e+5]
+
+WordleEnv100-v0
+Character level rl 
+prob_cheat=0.05
+wins on 38/100 Words
+n_hidden = 3
+hidden_size=512
+batch_size=256
+lr=1e-3
+
+Did not work. Too high lr I guess. Loss ratio oscillated between 0.3 and 0.5 around 20k iterations
+
+
+

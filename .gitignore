@@ -129,6 +129,6 @@ dmypy.json
 .pyre/
 
 # Folders not to be pushed into repo
-lightning_logs/
+# lightning_logs/
 runs/
 wandb/
