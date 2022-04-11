@@ -276,7 +276,7 @@ class WordleEnvFull(WordleEnvBase):
 
 class WordleEnvReal(WordleEnvBase):
     def __init__(self):
-        super().__init__(words=_load_words(), allowable_words=2315, max_turns=6)
+        super().__init__(words=_load_words(), allowable_words=2315, max_turns=6, word_n=5)
 
 
 class WordleEnvRealWithMask(WordleEnvBase):
