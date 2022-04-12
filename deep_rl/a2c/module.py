@@ -345,10 +345,11 @@ class AdvantageActorCritic(LightningModule):
             if self._losses:
                 self.log("train_loss:", loss, prog_bar=True)
                 self.log("loss_ratio:", self._losses/(self._wins+self._losses), prog_bar=True)
-                self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
+                if self._wins > 0:
+                    self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
                 self.log("total wins:", self._total_wins, prog_bar=True)
-                self.log("total losses:", self._total_losses, prog_bar=True)
-                self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
+                # self.log("total losses:", self._total_losses, prog_bar=True)
+                # self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
 
             if self._wins > 0:
                 metrics["reward_per_win"] = self._winning_rewards / self._wins

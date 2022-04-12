@@ -67,8 +67,6 @@ class WordleEnvBase(gym.Env):
         self.state: wordle.state.WordleState = None
         self.state_updater = wordle.state.update
 
-        
-        # import pdb;pdb.set_trace()
 
     def step(self, action: int):
         if self.done:

@@ -21,7 +21,7 @@ class SumChars(nn.Module):
         word_width = 26*WORDLE_N
         layers = [
             nn.Linear(obs_size, hidden_size),
-            nn.ReLU(),
+            nn.ReLU()
         ]
         for _ in range(n_hidden):
             layers.append(nn.Linear(hidden_size, hidden_size))
@@ -30,6 +30,11 @@ class SumChars(nn.Module):
         layers.append(nn.ReLU())
 
         self.f0 = nn.Sequential(*layers)
+        def init_normal(m):
+            if type(m) == nn.Linear:
+                nn.init.kaiming_normal_(m.weight)
+        self.f0.apply(init_normal)
+        
         word_array = np.zeros((word_width, len(word_list)))
         for i, word in enumerate(word_list):
             for j, c in enumerate(word):
@@ -41,7 +46,10 @@ class SumChars(nn.Module):
         self.count = 0
 
     def forward(self, x):
+        # import pdb;pdb.set_trace()
+        eps = 0.001
         y = self.f0(x.float())
+        y = (x - torch.mean(x)) / (torch.std(x) + eps)
         actor_a = torch.clamp(torch.log_softmax(
             torch.tensordot(self.actor_head(y),
                             self.words.to(self.get_device(y)),

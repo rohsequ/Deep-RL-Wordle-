@@ -42,7 +42,7 @@ def update(state: WordleState, word: str, goal_word: str) -> WordleState:
                 if (nwcint != i) and (state[offset + len(WORDLE_CHARS)*nwcint] != GREEN) and (state[offset + len(WORDLE_CHARS)*nwcint] != GREY):   
                     state[offset + len(WORDLE_CHARS)*nwcint] = YELLOW
                     
-            tmp_goal_word = tmp_goal_word.replace(c, '', 1) 
+            tmp_goal_word = tmp_goal_word.replace(c, '', 1)
         elif c in tmp_goal_word:
             color[i] = YELLOW
             # Char at position i = no, other chars stay as they are
@@ -56,4 +56,3 @@ def update(state: WordleState, word: str, goal_word: str) -> WordleState:
             for nwcint in range(len(word)):
                 state[offset + len(WORDLE_CHARS)*nwcint] = GREY
     return state, color
-
