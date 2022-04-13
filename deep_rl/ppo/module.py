@@ -14,12 +14,15 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
 import ppo
+import wordle
 import wordle.state
 from ppo.agent import ActorCategorical
+from ppo.agent import GreedyActorCategorical
 from ppo.experience import ExperienceSourceDataset, Experience
 
 import h5py
 
+import pl_bolts
 from pl_bolts.utils import _GYM_AVAILABLE
 from pl_bolts.models.rl.common.networks import MLP
 
@@ -70,8 +73,8 @@ class PPO(LightningModule):
         """
         super().__init__()
 
-        if not _GYM_AVAILABLE:  # pragma: no cover
-            raise ModuleNotFoundError("This Module requires gym environment which is not installed yet.")
+        #if not _GYM_AVAILABLE:  # pragma: no cover
+        #    raise ModuleNotFoundError("This Module requires gym environment which is not installed yet.")
 
         # Hyperparameters
         self.lr_actor = lr_actor
@@ -102,7 +105,8 @@ class PPO(LightningModule):
         self.critic = MLP(self.env.observation_space.shape, 1)
         # policy network (agent)
         # actor_mlp = MLP(self.env.observation_space.shape, self.env.action_space.n)
-        self.actor = ActorCategorical(self.net)
+        self.actor = ActorCategorical(self.net, word_list=self.env.words)
+        #self.agent = ActorCategorical(self.net, word_list=self.env.words)
 
         self.batch_states = []
         self.batch_actions = []
@@ -141,21 +145,21 @@ class PPO(LightningModule):
         self.state = self.env.reset()
 
         # For collecting data
-        self._num_batches_before_clear = 10
-        self._resize_dset = False
-        self._data = {"states": [], "actions": [], "dones": [], "qvals": [], "adv": [], "targets" : []}
+        #self._num_batches_before_clear = 10
+        #self._resize_dset = False
+        #self._data = {"states": [], "actions": [], "dones": [], "qvals": [], "adv": [], "targets" : []}
 
         # Create the hd5 file
-        if not evaluate:
-            file_name = "./data/ppo/" + self.env_str + ".hdf5"
-            sz = self._num_batches_before_clear * self.steps_per_epoch
-            with h5py.File(file_name, 'w') as f:
-                states_dset = f.create_dataset("states", (sz, self.state.shape[0]), maxshape=(None, 417),dtype=np.uint, compression="gzip", compression_opts=9)
-                actions_dset = f.create_dataset("actions", (sz,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
-                dones_dset = f.create_dataset("dones", (sz,), maxshape=(None,),dtype=np.bool_, compression="gzip", compression_opts=9)
-                qvals_dset = f.create_dataset("qvals", (sz,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
-                adv_dset = f.create_dataset("adv", (sz,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
-                targets_dset = f.create_dataset("targets", (sz,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
+        #if not evaluate:
+        #    file_name = "./data/ppo/" + self.env_str + ".hdf5"
+        #    sz = self._num_batches_before_clear * self.steps_per_epoch
+        #    with h5py.File(file_name, 'w') as f:
+        #        states_dset = f.create_dataset("states", (sz, self.state.shape[0]), maxshape=(None, 417),dtype=np.uint, compression="gzip", compression_opts=9)
+        #        actions_dset = f.create_dataset("actions", (sz,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
+        #        dones_dset = f.create_dataset("dones", (sz,), maxshape=(None,),dtype=np.bool_, compression="gzip", compression_opts=9)
+        #        qvals_dset = f.create_dataset("qvals", (sz,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
+        #        adv_dset = f.create_dataset("adv", (sz,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
+        #        targets_dset = f.create_dataset("targets", (sz,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
 
     def forward(self, x: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         """Passes in a state x through the network and returns the policy and a sampled action.
@@ -164,8 +168,8 @@ class PPO(LightningModule):
         Returns:
             Tuple of policy and action
         """
-        
-        pi, action = self.actor(torch.FloatTensor([x], device=self.device))
+        dict_reduction_pattern = self.env.get_dict_reduce_pattern()
+        pi, action = self.actor(torch.FloatTensor([x], device=self.device), dict_reduction_pattern)
         value = self.critic(torch.FloatTensor([x], device=self.device))
 
         return pi, action, value
@@ -241,7 +245,7 @@ class PPO(LightningModule):
             
             for _ in range(self.hparams.batch_size):
                 dict_reduction_pattern = self.env.get_dict_reduce_pattern()
-                action = self.agent(self.state, self.device, dict_reduction_pattern)[0]
+                action = self.actor(self.state, dict_reduction_pattern)[0]
                 if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
                     action = self._cheat_word
 
@@ -299,7 +303,7 @@ class PPO(LightningModule):
                     self.episode_reward = 0
 
             if epoch_end:
-
+                '''
                 self._data["states"].extend(self.batch_states)
                 self._data["actions"].extend([action.item() for action  in self.batch_actions])
                 self._data["dones"].extend(self.batch_masks)
@@ -350,6 +354,7 @@ class PPO(LightningModule):
                     # Free up memory
                     for k in self._data:
                         self._data[k] = []
+                    '''
 
                 train_data = zip(
                     self.batch_states, self.batch_actions, self.batch_logp, self.batch_qvals, self.batch_adv
@@ -366,8 +371,6 @@ class PPO(LightningModule):
                 self.batch_masks.clear()
                 self.batch_targets.clear()
                 
-                
-
                 # logging
                 self.avg_reward = sum(self.epoch_rewards) / self.steps_per_epoch
 
@@ -382,7 +385,7 @@ class PPO(LightningModule):
                 self.avg_ep_reward = total_epoch_reward / nb_episodes
                 self.avg_ep_len = (self.steps_per_epoch - steps_before_cutoff) / nb_episodes
 
-                self.epoch_rewards.clear()
+                self.epoch_rewards.clear() 
 
     def actor_loss(self, state, action, logp_old, adv) -> Tensor:
         pi, _ = self.actor(state)
@@ -519,8 +522,8 @@ class PPO(LightningModule):
             "--clip_ratio", type=float, default=0.2, help="hyperparameter for clipping in the policy objective"
         )
         parser.add_argument("--network_name", type=str, default="SumChars", help="Network to use")
-        parser.add_argument("--n_hidden", type=int, default="1", help="Number of hidden layers")
-        parser.add_argument("--hidden_size", type=int, default="256", help="Width of hidden layers")
+        parser.add_argument("--n_hidden", type=int, default="2", help="Number of hidden layers")
+        parser.add_argument("--hidden_size", type=int, default="512", help="Width of hidden layers")
         parser.add_argument("--seed", type=int, default=123, help="seed for training run")
         parser.add_argument("--prob_play_lost_word", type=float, default=0, help="Probabiilty of replaying a losing word")
         parser.add_argument("--prob_cheat", type=float, default=0, help="Probability of cheating when playing lost word")
@@ -532,7 +535,7 @@ class PPO(LightningModule):
             default=100,
             help="how many episodes to include in avg reward",
         )
-
+        
         parser.add_argument("--evaluate", type=bool, default=False, help="Whether the model is in evaluate mode.")
         
         return parser
