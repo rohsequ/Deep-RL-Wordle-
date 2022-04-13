@@ -65,4 +65,4 @@ class EmbeddingChars(nn.Module):
 
     def get_device(self, batch) -> str:
         """Retrieve device currently being used by minibatch."""
-        return batch[0].device.index
+        return batch[0].device.index 
