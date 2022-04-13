@@ -59,7 +59,7 @@ def goal(
 
     outcomes = []
     win = False
-    for i in range(100000):
+    for i in range(200000):
         action = agent(state, "cpu")[0]
         state, reward, done, _ = env.step(action)
         outcomes.append((env.words[action], reward))
@@ -68,7 +68,7 @@ def goal(
                 win = True
             break
 
-    for i in range(100000,env.max_turns):
+    for i in range(200000,env.max_turns):
         dict_reduction_pattern = env.get_dict_reduce_pattern()
         action = agent(state, "cpu", pattern=dict_reduction_pattern)[0]
         state, reward, done, _ = env.step(action)
