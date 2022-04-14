@@ -1,0 +1,12 @@
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\connectors\checkpoint_connector.py:45: LightningDeprecationWarning: Setting `Trainer(resume_from_checkpoint=)` is deprecated in v1.5 and will be removed in v1.7. Please pass `Trainer.fit(ckpt_path=)` directly instead.
+  rank_zero_deprecation(
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\trainer.py:1584: UserWarning: GPU available but not used. Set the gpus flag in your trainer `Trainer(gpus=1)` or script `--gpus=1`.
+  rank_zero_warn(
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\trainer.py:1905: LightningDeprecationWarning: `trainer.resume_from_checkpoint` is deprecated in v1.5 and will be removed in v1.7. Specify the fit checkpoint path with `trainer.fit(ckpt_path=)` instead.
+  rank_zero_deprecation(
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\connectors\checkpoint_connector.py:250: UserWarning: You're resuming from a checkpoint that ended mid-epoch. Training will start from the beginning of the next epoch. This can cause unreliable results if further training is done, consider using an end of epoch checkpoint.
+  rank_zero_warn(
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\data_loading.py:132: UserWarning: The dataloader, train_dataloader, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 16 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+Training: 0it [00:00, ?it/s]Training: 0it [00:00, ?it/s]Epoch 3: : 0it [00:00, ?it/s]> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\sumchars.py(47)forward()
+-> out_lstm, (self.h0, self.c0) = self.f1(x.float(), (self.h0, self.c0))

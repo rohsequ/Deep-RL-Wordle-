@@ -94,6 +94,7 @@ class GreedyActorCriticAgent:
         prob_np = probabilities.data.cpu().numpy()
 
         # Modify the word list based on allowed words pattern:
+        pattern = None
         if pattern is not None:
             temp_allowed_words_index = []
             new_word_list = []

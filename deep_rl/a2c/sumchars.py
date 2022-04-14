@@ -1,12 +1,12 @@
 import imp
 from json.encoder import py_encode_basestring
 from typing import List
+from unicodedata import bidirectional
 
 import numpy as np
 import torch
 from torch import nn
 from wordle.const import *
-from wordle.const import WORDLE_N
 
 
 class SumChars(nn.Module):
@@ -19,17 +19,13 @@ class SumChars(nn.Module):
         """
         super().__init__()
         word_width = 26*WORDLE_N
-        layers = [
-            nn.Linear(obs_size, hidden_size),
-            nn.ReLU(),
-        ]
-        for _ in range(n_hidden):
-            layers.append(nn.Linear(hidden_size, hidden_size))
-            layers.append(nn.ReLU())
-        layers.append(nn.Linear(hidden_size, word_width))
-        layers.append(nn.ReLU())
-
-        self.f0 = nn.Sequential(*layers)
+        self.h0 = torch.randn(n_hidden, 1, hidden_size) # D*numlayers, Hout D = 1 for uni-directional
+        self.c0 = torch.randn(n_hidden, 1, hidden_size) # D*numlayers, Hout
+        self.f1 = nn.LSTM(input_size=obs_size, hidden_size=hidden_size, num_layers=n_hidden, batch_first=True)
+        self.f2 = nn.Linear(hidden_size, word_width)
+        nn.init.kaiming_normal_(self.f2.weight)
+        self.f3 = nn.ReLU()
+        
         word_array = np.zeros((word_width, len(word_list)))
         for i, word in enumerate(word_list):
             for j, c in enumerate(word):
@@ -41,16 +37,17 @@ class SumChars(nn.Module):
         self.count = 0
 
     def forward(self, x):
-        y = self.f0(x.float())
+        # import pdb; pdb.set_trace()
+        input = x.unsqueeze_(0) # N, L, Hin
+        out_lstm, (self.h0, self.c0) = self.f1(input.float(), (self.h0, self.c0))
+        out_linear = self.f2(out_lstm.squeeze(0))
+        y = self.f3(out_linear)
         actor_a = torch.clamp(torch.log_softmax(
             torch.tensordot(self.actor_head(y),
                             self.words.to(self.get_device(y)),
                             dims=((1,), (0,))),
             dim=-1), min=-15, max=0)
         critic_c = self.critic_head(y)
-        # if self.count >= 10000:
-        # # # if -8 in actor_a:
-            # import pdb; pdb.set_trace()
         self.count +=1
         
         return actor_a, critic_c

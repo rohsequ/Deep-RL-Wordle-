@@ -1,0 +1,15 @@
+2022-04-13 22:55:34,737 INFO    MainThread:12408 [internal.py:wandb_internal():64] W&B internal server running at pid: 12408
+2022-04-13 22:55:34,738 INFO    WriterThread:12408 [datastore.py:open_for_write():77] open: D:\EECS 545 PROJECT\wordle_a2c_lstm_new-hardik\deep_rl\wandb\offline-run-20220413_225533-jz8avrow\run-jz8avrow.wandb
+2022-04-13 22:55:34,739 DEBUG   HandlerThread:12408 [handler.py:handle_request():55] handle_request: run_start
+2022-04-13 22:55:34,754 DEBUG   HandlerThread:12408 [meta.py:__init__():34] meta init
+2022-04-13 22:55:34,754 DEBUG   HandlerThread:12408 [meta.py:__init__():48] meta init done
+2022-04-13 22:55:34,754 DEBUG   HandlerThread:12408 [meta.py:probe():190] probe
+2022-04-13 22:55:34,775 DEBUG   HandlerThread:12408 [meta.py:_save_pip():52] save pip
+2022-04-13 22:55:34,776 DEBUG   HandlerThread:12408 [meta.py:_save_pip():66] save pip done
+2022-04-13 22:55:34,776 DEBUG   HandlerThread:12408 [meta.py:probe():231] probe done
+2022-04-13 22:56:40,543 WARNING MainThread:12408 [internal.py:wandb_internal():118] Internal process interrupt: 1
+2022-04-13 22:56:40,670 WARNING MainThread:12408 [internal.py:wandb_internal():118] Internal process interrupt: 2
+2022-04-13 22:56:40,670 ERROR   MainThread:12408 [internal.py:wandb_internal():121] Internal process interrupted.
+2022-04-13 22:56:40,670 INFO    HandlerThread:12408 [handler.py:finish():274] shutting down handler
+2022-04-13 22:56:40,670 INFO    WriterThread:12408 [datastore.py:close():258] close: D:\EECS 545 PROJECT\wordle_a2c_lstm_new-hardik\deep_rl\wandb\offline-run-20220413_225533-jz8avrow\run-jz8avrow.wandb
+2022-04-13 22:56:41,349 INFO    SenderThread:12408 [sender.py:finish():756] shutting down sender

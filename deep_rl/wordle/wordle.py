@@ -20,7 +20,7 @@ def _load_words(limit: Optional[int]=None) -> List[str]:
     w_bank = pd.read_csv(VALID_WORDS_PATH)
     w_bank = w_bank[w_bank['words'].str.len() == WORDLE_N]
     lines = w_bank['words'].str.upper().tolist()
-    random.shuffle(lines)
+    # random.shuffle(lines)
 
     if not limit:
         return lines
@@ -67,8 +67,6 @@ class WordleEnvBase(gym.Env):
         self.state: wordle.state.WordleState = None
         self.state_updater = wordle.state.update
 
-        
-        # import pdb;pdb.set_trace()
 
     def step(self, action: int):
         if self.done:

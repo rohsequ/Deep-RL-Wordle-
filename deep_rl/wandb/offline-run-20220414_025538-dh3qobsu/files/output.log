@@ -1,0 +1,6 @@
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\connectors\checkpoint_connector.py:45: LightningDeprecationWarning: Setting `Trainer(resume_from_checkpoint=)` is deprecated in v1.5 and will be removed in v1.7. Please pass `Trainer.fit(ckpt_path=)` directly instead.
+  rank_zero_deprecation(
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\trainer.py:1584: UserWarning: GPU available but not used. Set the gpus flag in your trainer `Trainer(gpus=1)` or script `--gpus=1`.
+  rank_zero_warn(
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\trainer.py:1905: LightningDeprecationWarning: `trainer.resume_from_checkpoint` is deprecated in v1.5 and will be removed in v1.7. Specify the fit checkpoint path with `trainer.fit(ckpt_path=)` instead.
+  rank_zero_deprecation(

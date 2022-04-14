@@ -1,0 +1,25 @@
+{
+    "os": "Windows-10-10.0.22000-SP0",
+    "python": "3.9.7",
+    "heartbeatAt": "2022-04-14T07:00:23.110851",
+    "startedAt": "2022-04-14T07:00:22.160850",
+    "docker": null,
+    "gpu": "NVIDIA GeForce RTX 3070 Laptop GPU",
+    "gpu_count": 1,
+    "cpu_count": 16,
+    "cuda": null,
+    "args": [
+        "--batch_size",
+        "1",
+        "--env",
+        "WordleEnv100-v0",
+        "--resume_from_checkpoint",
+        "D:\\EECS 545 PROJECT\\wordle_a2c_lstm_new-hardik\\deep_rl\\lightning_logs\\version_36\\checkpoints\\epoch=2-step=436399.ckpt"
+    ],
+    "state": "running",
+    "codePath": "a2c_train.py",
+    "program": "d:\\EECS 545 PROJECT\\wordle_a2c_lstm_new-hardik\\deep_rl\\a2c_train.py",
+    "host": "LAPTOP-Hardik",
+    "username": "hardi",
+    "executable": "C:\\Users\\hardi\\anaconda3\\python.exe"
+}

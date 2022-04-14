@@ -1,0 +1,27 @@
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\trainer.py:1584: UserWarning: GPU available but not used. Set the gpus flag in your trainer `Trainer(gpus=1)` or script `--gpus=1`.
+  rank_zero_warn(
+C:\Users\hardi\anaconda3\lib\site-packages\pytorch_lightning\trainer\data_loading.py:132: UserWarning: The dataloader, train_dataloader, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 16 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+Training: 0it [00:00, ?it/s]Training: 0it [00:00, ?it/s]Epoch 0: : 0it [00:00, ?it/s]> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(248)loss()
+-> logprobs, values = self.net(states)
+> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(251)loss()
+-> with torch.no_grad():
+> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(253)loss()
+-> advs = returns - values * 1 + returns.mean()
+> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(255)loss()
+-> advs = (advs - advs.mean()) / (1 + self.eps)
+tensor([[2.6984]])
+> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(257)loss()
+-> targets = (returns - returns.mean()) / (1 + self.eps)
+tensor([[0.]])
+> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(260)loss()
+-> entropy = -logprobs.exp() * logprobs
+tensor([0.])
+> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(261)loss()
+-> entropy = self.hparams.entropy_beta * entropy.sum(1).mean()
+> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(264)loss()
+-> logprobs = logprobs[range(len(actions)), actions]
+tensor(0.0227, grad_fn=<MulBackward0>)
+Epoch 0: : 1it [00:15, 15.88s/it]Epoch 0: : 1it [00:15, 15.88s/it, loss=-0.0189, v_num=29]> d:\eecs 545 project\wordle_a2c_lstm_new-hardik\deep_rl\a2c\module.py(248)loss()
+-> logprobs, values = self.net(states)
+Epoch 0: : 2it [00:22, 11.37s/it, loss=-0.0189, v_num=29]Epoch 0: : 2it [00:22, 11.37s/it, loss=-0.0188, v_num=29]

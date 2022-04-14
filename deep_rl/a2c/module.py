@@ -90,7 +90,7 @@ class AdvantageActorCritic(LightningModule):
         self._total_losses = 0
         self._total_wins = 0
         self._losses = 0
-        self.unique_words_used = {0} # Declared as a Set
+        # self.unique_words_used = {0} # Declared as a Set
         self._last_win = []
         self._last_loss = []
         self._seq = []
@@ -150,101 +150,56 @@ class AdvantageActorCritic(LightningModule):
             batch_rewards = []
             batch_masks = []
             batch_targets = []
-            for _ in range(self.hparams.batch_size):
-                dict_reduction_pattern = self.env.get_dict_reduce_pattern()
-                action = self.agent(self.state, self.device, dict_reduction_pattern)[0]
-                if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
-                    action = self._cheat_word
+            with torch.no_grad():
+                for _ in range(self.hparams.batch_size):
+                    dict_reduction_pattern = self.env.get_dict_reduce_pattern()
+                    action = self.agent(self.state, self.device, dict_reduction_pattern)[0]
+                    if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
+                        action = self._cheat_word
 
-                next_state, reward, done, aux = self.env.step(action)
+                    next_state, reward, done, aux = self.env.step(action)
 
-                batch_states.append(self.state)
-                batch_actions.append(action)
-                batch_rewards.append(reward)
-                batch_masks.append(done)
-                batch_targets.append(aux['goal_id'])
+                    batch_states.append(self.state)
+                    batch_actions.append(action)
+                    batch_rewards.append(reward)
+                    batch_masks.append(done)
+                    batch_targets.append(aux['goal_id'])
 
-                self._seq.append(Experience(self.state.copy(), action, reward, aux['goal_id']))
-                self.state = next_state
-                self.episode_reward += reward
+                    self._seq.append(Experience(self.state.copy(), action, reward, aux['goal_id']))
+                    self.state = next_state
+                    self.episode_reward += reward
 
-                if done:
-                    if action == self.env.goal_word:
-                        self._winning_steps += self.env.max_turns - wordle.state.remaining_steps(self.state)
-                        self._wins += 1
-                        self._total_wins += 1
-                        self._winning_rewards += self.episode_reward
-                        self._last_win = self._seq
-                    else:
-                        self._losses += 1
-                        self._total_losses += 1
-                        self._last_loss = self._seq
-                        self._recent_losing_words.append(aux['goal_id'])
-                    self._seq = []
-                    self._total_rewards += self.episode_reward
+                    if done:
+                        if action == self.env.goal_word:
+                            self._winning_steps += self.env.max_turns - wordle.state.remaining_steps(self.state)
+                            self._wins += 1
+                            self._total_wins += 1
+                            self._winning_rewards += self.episode_reward
+                            self._last_win = self._seq
+                        else:
+                            self._losses += 1
+                            self._total_losses += 1
+                            self._last_loss = self._seq
+                            self._recent_losing_words.append(aux['goal_id'])
+                        self._seq = []
+                        self._total_rewards += self.episode_reward
 
-                    self.done_episodes += 1
-                    # With some probability, override the word with one that we lost recently
-                    self.state = self.env.reset()
-                    self._cheat_word = None
-                    if len(self._recent_losing_words) > 0:
-                        if np.random.random() < self.hparams.prob_play_lost_word:
-                            lost_idx = int(np.random.random()*len(self._recent_losing_words))
-                            self.env.set_goal_id(self._recent_losing_words[lost_idx])
-                            if np.random.random() < self.hparams.prob_cheat:
-                                self._cheat_word = self._recent_losing_words[lost_idx]
+                        self.done_episodes += 1
+                        # With some probability, override the word with one that we lost recently
+                        self.state = self.env.reset()
+                        self._cheat_word = None
+                        if len(self._recent_losing_words) > 0:
+                            if np.random.random() < self.hparams.prob_play_lost_word:
+                                lost_idx = int(np.random.random()*len(self._recent_losing_words))
+                                self.env.set_goal_id(self._recent_losing_words[lost_idx])
+                                if np.random.random() < self.hparams.prob_cheat:
+                                    self._cheat_word = self._recent_losing_words[lost_idx]
 
-                    self.episode_reward = 0
+                        self.episode_reward = 0
 
             _, last_value = self.forward(self.state)
 
             returns = self.compute_returns(batch_rewards, batch_masks, last_value)
-
-            # self._data["states"].extend(batch_states)
-            # self._data["actions"].extend(batch_actions)
-            # self._data["dones"].extend(batch_masks)
-            # self._data["returns"].extend(list(returns.numpy()))
-            # self._data["targets"].extend(batch_targets)
-
-            # if len(self._data["actions"]) >= self._num_batches_before_clear * len(batch_actions):
-                
-            #     length = len(self._data["actions"])
-
-                # file_name = "./data/a2c/" + self.env_str + ".hdf5"
-                # with h5py.File(file_name, 'a') as f:
-
-                #     states_dset = f["states"]
-                #     actions_dset = f["actions"]
-                #     dones_dset = f["dones"]
-                #     returns_dset = f["returns"]
-                #     targets_dset = f["targets"]
-
-                #     curr_size = states_dset.shape[0]
-
-                #     if self._resize_dset:
-                #         states_dset.resize(curr_size + length, axis=0)
-                #         actions_dset.resize(curr_size + length, axis=0)
-                #         dones_dset.resize(curr_size + length, axis=0)
-                #         returns_dset.resize(curr_size + length, axis=0)
-                #         targets_dset.resize(curr_size + length, axis=0)
-
-                #         states_dset[curr_size:, :] = self._data["states"]
-                #         actions_dset[curr_size:] = self._data["actions"]
-                #         dones_dset[curr_size:] = self._data["dones"]
-                #         returns_dset[curr_size:] = self._data["returns"]
-                #         targets_dset[curr_size:] = self._data["targets"]
-
-                #     else:
-                #         self._resize_dset = True
-                #         states_dset[:, :] = self._data["states"]
-                #         actions_dset[:] = self._data["actions"]
-                #         dones_dset[:] = self._data["dones"]
-                #         returns_dset[:] = self._data["returns"]
-                #         targets_dset[:] = self._data["targets"]
-
-                # # Free up memory
-                # for k in self._data:
-                #     self._data[k] = []
 
             for idx in range(self.hparams.batch_size):
                 yield batch_states[idx], batch_actions[idx], returns[idx], batch_targets[idx]
@@ -289,6 +244,7 @@ class AdvantageActorCritic(LightningModule):
             returns: tensor of shape (batch_size, )
         """
 
+        # import pdb; pdb.set_trace()
         logprobs, values = self.net(states)
 
         # calculates (normalized) advantage
@@ -325,29 +281,30 @@ class AdvantageActorCritic(LightningModule):
         # Compute loss to backprop
         loss = self.loss(states, actions, returns)
         
-        # #Calculate the Unique words used from actions
+        #Calculate the Unique words used from actions
         # self.unique_words_used.update(actions.tolist())
-        # # import pdb;pdb.set_trace()
+        # import pdb;pdb.set_trace()
 
         if self.global_step % 200 == 0:
             metrics = {
                 "train_loss": loss,
                 "total_games_played": self.done_episodes,
-                "lose_ratio": self._losses/(self._wins+self._losses),
+                "loss_ratio": self._losses/(self._wins+self._losses + 1e-8),
                 "wins": self._wins,
                 "losses": self._losses,
                 "total_wins": self._total_wins,
                 "total_losses": self._total_losses,
-                "reward_per_game": self._total_rewards / (self._wins+self._losses),
+                "reward_per_game": self._total_rewards / (self._wins+self._losses + 1e-8),
                 "global_step": self.global_step,
-                "Unique Words used" : len(self.unique_words_used),
             }
-
-            if self._wins > 0:
+            if self._losses:
                 self.log("train_loss:", loss, prog_bar=True)
                 self.log("loss_ratio:", self._losses/(self._wins+self._losses), prog_bar=True)
-                self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
-                self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
+                if self._wins > 0:
+                    self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
+                self.log("total wins:", self._total_wins, prog_bar=True)
+
+            if self._wins > 0:
                 metrics["reward_per_win"] = self._winning_rewards / self._wins
                 metrics["avg_winning_turns"] = self._winning_steps / self._wins
 
@@ -394,12 +351,6 @@ class AdvantageActorCritic(LightningModule):
         log = {
             "episodes": self.done_episodes,
         }
-        # self.log("train_loss:", loss, prog_bar=True)
-        # self.log("loss_ratio:", self._losses/(self._wins+self._losses), prog_bar=True)
-        # self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
-        # self.log("total wins:", self._total_wins, prog_bar=True)
-        # self.log("total losses:", self._total_losses, prog_bar=True)
-        # self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
         return OrderedDict(
             {
                 "loss": loss,
