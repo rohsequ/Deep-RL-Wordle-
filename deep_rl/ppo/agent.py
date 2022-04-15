@@ -11,33 +11,23 @@ class ActorCategorical(nn.Module):
     """Policy network, for discrete action spaces, which returns a distribution and an action given an
     observation."""
 
-    def __init__(self, actor_net: nn.Module, word_list) -> None:
+    def __init__(self, actor_net: nn.Module) -> None:
         """
         Args:
             actor_net: neural network that predicts action probabilities given the env state
         """
         super().__init__()
-
         self.actor_net = actor_net
-        self.allowed_word_list = word_list
 
-    def forward(self, states, pattern):
+    def forward(self, states):
+        # Shape of logits = (batch_size, WORDLE_N, 26)
         logits = self.actor_net(states)
-
-        if pattern is not None:
-            temp_allowed_words_index = []
-            new_word_list = []
-            for i in range(len(self.allowed_word_list)):
-                match = re.search(pattern, self.allowed_word_list[i])
-                if match:
-                    temp_allowed_words_index.append(i)
-                    new_word_list.append(self.allowed_word_list[i])
-            # import pdb;pdb.set_trace() 
-            # self.allowed_word_list = new_word_list            # UNCOMMENT TO REDUCE THE ALLOWED WORD LIST. DO IT ONLY FOR FULL WORD LIST
-            logits = logits[:,temp_allowed_words_index]
 
         pi = Categorical(logits=logits)
         actions = pi.sample()
+
+        # TODO: Check shape of actions
+        # import pdb; pdb.set_trace()
 
         return pi, actions
 

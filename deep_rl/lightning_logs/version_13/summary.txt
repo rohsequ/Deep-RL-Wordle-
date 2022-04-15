@@ -1,0 +1,45 @@
+wandb: Waiting for W&B process to finish, PID 2765... (success).
+wandb: Run history:
+wandb:    Unique Words used ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:    avg_winning_turns ▆▅▁▅▅▆▄▄▃▅▄▄▅▅▆▄▆▅▆▅▅▄▅█▄▆▅▅▇▅█▆▆██▅▇▇▅▆
+wandb:          global_step ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:           lose_ratio ███▇█▇██▆▇▇▅▆▆▆▅▅▄▄▅▅▄▄▃▃▄▃▄▃▃▂▂▂▁▂▂▂▂▂▁
+wandb:               losses ███▇█▇██▇▇▇▅▆▆▆▅▅▄▄▅▅▄▄▃▄▄▃▄▃▃▂▂▂▁▂▂▂▂▂▁
+wandb:      reward_per_game ▁▂▁▂▁▂▁▁▃▃▂▄▃▃▄▄▅▅▅▄▄▄▅▆▅▅▆▅▆▆▇▇▇█▇▇▇▇▇█
+wandb:       reward_per_win ▄▄▁▃▃▄▃▃▄▅▅▄▆▄▅▄▅▆▅▅▄▄▅▇▄▆▆▅▆▆▇▇▇▇█▆▇▆▆▇
+wandb:   total_games_played ▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:         total_losses ▁▁▁▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇▇▇████
+wandb:           total_wins ▁▁▁▁▂▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▄▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:           train_loss ▄▅▄▃▅▆▅▆▃▅▁▄▂▇▆▆▆▆▃▄▆▆▃▃▅▁▆▆▂▃▅▆█▅▃▅▅▃▅▅
+wandb:                 wins ▁▁▂▂▁▂▁▁▃▂▂▄▃▃▃▅▄▅▅▄▄▅▅▆▆▅▆▅▆▆▇▇▇▇▇▇▇▇▇█
+wandb: 
+wandb: Run summary:
+wandb:    Unique Words used 1
+wandb:    avg_winning_turns 4.23019
+wandb:          global_step 200000
+wandb:           lose_ratio 0.16273
+wandb:               losses 922
+wandb:      reward_per_game 44.46091
+wandb:       reward_per_win 56.21341
+wandb:   total_games_played 5618218
+wandb:         total_losses 1092859
+wandb:           total_wins 4525359
+wandb:           train_loss 0.45139
+wandb:                 wins 4744
+wandb: 
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync /home/shreyas/EECS545/current-code/Deep-RL-Wordle-/deep_rl/wandb/offline-run-20220411_201831-11nyr3wg
+wandb: Find logs at: ./wandb/offline-run-20220411_201831-11nyr3wg/logs/debug.log
+wandb: 
+Epoch 0: : 200006it [3:38:48, 15.23it/s, loss=-0.247, v_num=13, train_loss:=0.451, loss_ratio:=0.163, total wins:=4.53e+6, total losses:=1.09e+6]
+
+WordleEnvReal-v0
+Character level rl 
+prob_cheat=0.05
+wins on 1972/2315 Words
+n_hidden = 2
+hidden_size=512
+batch_size=128
+lr=5e-5
+max_steps=400k + 200k + 200k
+

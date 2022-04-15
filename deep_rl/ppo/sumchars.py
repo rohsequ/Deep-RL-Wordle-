@@ -3,6 +3,7 @@ from typing import List
 import numpy as np
 import torch
 from torch import nn
+from wordle.const import WORDLE_CHARS, WORDLE_N
 
 class SumChars(nn.Module):
     def __init__(self, obs_size: int, word_list: List[str], n_hidden: int = 1, hidden_size: int = 256):
@@ -40,11 +41,9 @@ class SumChars(nn.Module):
     def forward(self, x):
 
         y = self.f0(x.float())
-        a = torch.log_softmax(
-            torch.tensordot(self.actor_head(y),
-                            self.words.to(self.get_device(y)),
-                            dims=((1,), (0,))),
-            dim=-1)
+        a = torch.clamp(torch.log_softmax(self.actor_head(y).view(-1, WORDLE_N, len(WORDLE_CHARS)), dim=-1), min=-10, max=0)
+
+        # Shape of a is (batch_size, WORDLE_N, 26)
 
         return a
 

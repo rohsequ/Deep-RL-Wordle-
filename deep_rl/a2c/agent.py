@@ -41,32 +41,10 @@ class ActorCriticAgent:
             for col in range(cdf.shape[1])] for row in range(cdf.shape[0])
         ]
 
-        # TODO: Check the shape of actions. Would have to reshape it to give a five letter word
         # Actions is a list with a list as its only element. The items of this list are the 5 ints corresponding to 5 letters
         # import pdb; pdb.set_trace()
 
         return actions
-
-class ActorCategorical(nn.Module):
-    """Policy network, for discrete action spaces, which returns a distribution and an action given an
-    observation."""
-
-    def __init__(self, actor_net: nn.Module) -> None:
-        """
-        Args:
-            actor_net: neural network that predicts action probabilities given the env state
-        """
-        super().__init__()
-
-        self.actor_net = actor_net
-
-    def forward(self, states):
-        logits = self.actor_net(states)
-        pi = Categorical(logits=logits)
-        actions = pi.sample()
-
-        return pi, actions
-
 
 class GreedyActorCriticAgent:
     def __init__(self, net, word_list):

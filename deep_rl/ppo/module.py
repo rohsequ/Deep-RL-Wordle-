@@ -18,8 +18,6 @@ import wordle.state
 from ppo.agent import ActorCategorical
 from ppo.experience import ExperienceSourceDataset, Experience
 
-import h5py
-
 from pl_bolts.utils import _GYM_AVAILABLE
 from pl_bolts.models.rl.common.networks import MLP
 
@@ -100,8 +98,6 @@ class PPO(LightningModule):
 
         # value network
         self.critic = MLP(self.env.observation_space.shape, 1)
-        # policy network (agent)
-        # actor_mlp = MLP(self.env.observation_space.shape, self.env.action_space.n)
         self.actor = ActorCategorical(self.net)
 
         self.batch_states = []
@@ -144,18 +140,6 @@ class PPO(LightningModule):
         self._num_batches_before_clear = 10
         self._resize_dset = False
         self._data = {"states": [], "actions": [], "dones": [], "qvals": [], "adv": [], "targets" : []}
-
-        # Create the hd5 file
-        if not evaluate:
-            file_name = "./data/ppo/" + self.env_str + ".hdf5"
-            sz = self._num_batches_before_clear * self.steps_per_epoch
-            with h5py.File(file_name, 'w') as f:
-                states_dset = f.create_dataset("states", (sz, self.state.shape[0]), maxshape=(None, 417),dtype=np.uint, compression="gzip", compression_opts=9)
-                actions_dset = f.create_dataset("actions", (sz,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
-                dones_dset = f.create_dataset("dones", (sz,), maxshape=(None,),dtype=np.bool_, compression="gzip", compression_opts=9)
-                qvals_dset = f.create_dataset("qvals", (sz,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
-                adv_dset = f.create_dataset("adv", (sz,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
-                targets_dset = f.create_dataset("targets", (sz,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
 
     def forward(self, x: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         """Passes in a state x through the network and returns the policy and a sampled action.
@@ -217,11 +201,12 @@ class PPO(LightningModule):
             with torch.no_grad():
                 pi, action, value = self(self.state)
                 log_prob = self.actor.get_log_prob(pi, action[0])
-            
-            if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
-                action = torch.tensor([self._cheat_word])
-            
-            next_state, reward, done, aux = self.env.step(action[0])
+
+            # if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
+            #     action = torch.tensor([self._cheat_word])
+
+            act = action[0].numpy()
+            next_state, reward, done, aux = self.env.step(act)
             reward = float(reward)
 
             self.episode_step += 1
@@ -293,57 +278,6 @@ class PPO(LightningModule):
                     self.episode_reward = 0
 
             if epoch_end:
-
-                self._data["states"].extend(self.batch_states)
-                self._data["actions"].extend([action.item() for action  in self.batch_actions])
-                self._data["dones"].extend(self.batch_masks)
-                self._data["qvals"].extend(self.batch_qvals)
-                self._data["adv"].extend(self.batch_adv)
-                self._data["targets"].extend(self.batch_targets)
-
-                if len(self._data["actions"]) >= self._num_batches_before_clear * len(self.batch_actions):
-                    
-                    length = len(self._data["actions"])
-
-                    file_name = "./data/ppo/" + self.env_str + ".hdf5"
-                    with h5py.File(file_name, 'a') as f:
-
-                        states_dset = f["states"]
-                        actions_dset = f["actions"]
-                        dones_dset = f["dones"]
-                        qvals_dset = f["qvals"]
-                        adv_dset = f["adv"]
-                        targets_dset = f["targets"]
-
-                        curr_size = states_dset.shape[0]
-
-                        if self._resize_dset:
-                            states_dset.resize(curr_size + length, axis=0)
-                            actions_dset.resize(curr_size + length, axis=0)
-                            dones_dset.resize(curr_size + length, axis=0)
-                            qvals_dset.resize(curr_size + length, axis=0)
-                            adv_dset.resize(curr_size + length, axis=0)
-                            targets_dset.resize(curr_size + length, axis=0)
-
-                            states_dset[curr_size:, :] = self._data["states"]
-                            actions_dset[curr_size:] = self._data["actions"]
-                            dones_dset[curr_size:] = self._data["dones"]
-                            qvals_dset[curr_size:] = self._data["qvals"]
-                            adv_dset[curr_size:] = self._data["adv"]
-                            targets_dset[curr_size:] = self._data["targets"]
-
-                        else:
-                            self._resize_dset = True
-                            states_dset[:, :] = self._data["states"]
-                            actions_dset[:] = self._data["actions"]
-                            dones_dset[:] = self._data["dones"]
-                            qvals_dset[:] = self._data["qvals"]
-                            adv_dset[:] = self._data["adv"]
-                            targets_dset[:] = self._data["targets"]
-
-                    # Free up memory
-                    for k in self._data:
-                        self._data[k] = []
 
                 train_data = zip(
                     self.batch_states, self.batch_actions, self.batch_logp, self.batch_qvals, self.batch_adv
