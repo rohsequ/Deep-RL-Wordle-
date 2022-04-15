@@ -242,13 +242,14 @@ class PPO(LightningModule):
             self.ep_values.append(value.item())
 
             self.state = next_state
+           
+           
+            #for _ in range(self.hparams.batch_size):
+            #    dict_reduction_pattern = self.env.get_dict_reduce_pattern()
+            #    action = self.actor(torch.FloatTensor([self.state]), dict_reduction_pattern)[0]
+            #    if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
+            #        action = self._cheat_word
             
-            for _ in range(self.hparams.batch_size):
-                dict_reduction_pattern = self.env.get_dict_reduce_pattern()
-                action = self.actor(self.state, dict_reduction_pattern)[0]
-                if wordle.state.remaining_steps(self.state) == 1 and self._cheat_word:
-                    action = self._cheat_word
-
             epoch_end = step == (self.steps_per_epoch - 1)
             terminal = len(self.ep_rewards) == self.max_episode_len
 
@@ -387,8 +388,8 @@ class PPO(LightningModule):
 
                 self.epoch_rewards.clear() 
 
-    def actor_loss(self, state, action, logp_old, adv) -> Tensor:
-        pi, _ = self.actor(state)
+    def actor_loss(self, state, action, logp_old, adv, pattern) -> Tensor:
+        pi, _ = self.actor(state, pattern)
         logp = self.actor.get_log_prob(pi, action)
         ratio = torch.exp(logp - logp_old)
         clip_adv = torch.clamp(ratio, 1 - self.clip_ratio, 1 + self.clip_ratio) * adv
@@ -419,7 +420,8 @@ class PPO(LightningModule):
         self.log("avg_reward", self.avg_reward, prog_bar=True, on_step=False, on_epoch=True)
 
         if optimizer_idx == 0:
-            loss_actor = self.actor_loss(state, action, old_logp, adv)
+            dict_reduction_pattern = self.env.get_dict_reduce_pattern()
+            loss_actor = self.actor_loss(state, action, old_logp, adv, dict_reduction_pattern)
             self.log("loss_actor", loss_actor, on_step=False, on_epoch=True, prog_bar=True, logger=True)
 
             return loss_actor
