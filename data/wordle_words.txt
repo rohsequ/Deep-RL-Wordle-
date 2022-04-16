@@ -76,7 +76,6 @@ book
 away	
 best	
 line	
-::AM	
 seen	
 land	
 head	
@@ -87,7 +86,6 @@ next
 view	
 five	
 love	
-TRUE	
 area	
 self	
 want	
