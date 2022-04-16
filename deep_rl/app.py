@@ -37,7 +37,7 @@ def hello():
 
 
 def _word_is_valid(word: str) -> bool:
-    if len(word) != 5 or not word.isalpha():
+    if len(word) != 4 or not word.isalpha():
         return False
     return True
 
