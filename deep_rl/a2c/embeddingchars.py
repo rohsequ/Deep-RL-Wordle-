@@ -20,7 +20,7 @@ class EmbeddingChars(nn.Module):
             hidden_size: size of hidden layers
         """
         super().__init__()
-        word_width = 26*5
+        word_width = 26*4
         self.n_emb = n_emb
 
         layers = [
