@@ -62,8 +62,9 @@ class GreedyActorCategorical(nn.Module):
         logits = self.actor_net(torch.tensor([states], device=device))
         probabilities = logits.exp().squeeze(dim=-1)
         prob_np = probabilities.data.cpu().numpy()
+        # import pdb; pdb.set_trace()
 
-        actions = np.argmax(prob_np, axis=1)
+        actions = np.argmax(prob_np, axis=-1)
 
         return list(actions)
 

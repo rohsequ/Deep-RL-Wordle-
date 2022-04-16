@@ -32,10 +32,10 @@ def cli_main() -> None:
         # model_old = AdvantageActorCritic.load_from_checkpoint(checkpoint)
 
 
-        checkpoint = "/home/shreyas/EECS545/current-code/Deep-RL-Wordle-/deep_rl/lightning_logs/version_13/checkpoints/epoch=0-step=199999.ckpt"
-        model_old = AdvantageActorCritic.load_from_checkpoint(checkpoint)
+        # checkpoint = "/home/shreyas/EECS545/current-code/Deep-RL-Wordle-/deep_rl/lightning_logs/version_13/checkpoints/epoch=0-step=199999.ckpt"
+        # model_old = AdvantageActorCritic.load_from_checkpoint(checkpoint)
 
-        model.net.load_state_dict(model_old.net.state_dict())
+        # model.net.load_state_dict(model_old.net.state_dict())
 
         # save checkpoints based on avg_reward
         checkpoint_callback = ModelCheckpoint(every_n_train_steps=100)

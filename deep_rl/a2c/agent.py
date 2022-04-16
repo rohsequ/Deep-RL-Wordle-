@@ -2,8 +2,6 @@ from typing import List
 
 import numpy as np
 import torch
-from torch import nn
-from torch.distributions import Categorical
 from wordle.const import WORDLE_N
 
 class ActorCriticAgent:

@@ -19,8 +19,6 @@ from a2c.agent import ActorCriticAgent
 from a2c.experience import ExperienceSourceDataset, Experience
 from wordle.const import WORDLE_CHARS, WORDLE_N
 
-# import h5py
-
 class AdvantageActorCritic(LightningModule):
     """PyTorch Lightning implementation of `Advantage Actor Critic <https://arxiv.org/abs/1602.01783v2>`_.
     Paper Authors: Volodymyr Mnih, Adrià Puigdomènech Badia, et al.
@@ -104,21 +102,6 @@ class AdvantageActorCritic(LightningModule):
         self.int2char = {k: c for k, c in enumerate(WORDLE_CHARS)}
         self.char2int = {c: k for k, c in self.int2char.items()}
 
-        # For collecting data
-        # self._num_batches_before_clear = 10
-        # self._resize_dset = False
-        # self._data = {"states": [], "actions": [], "dones": [], "returns": [], "targets" : []}
-
-        # # Create the hd5 file
-        # if not evaluate:
-        #     file_name = "./data/a2c/" + self.env_str + ".hdf5"
-        #     with h5py.File(file_name, 'w') as f:
-        #         states_dset = f.create_dataset("states", (self._num_batches_before_clear * batch_size, self.state.shape[0]), maxshape=(None, 417),dtype=np.uint, compression="gzip", compression_opts=9)
-        #         actions_dset = f.create_dataset("actions", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
-        #         dones_dset = f.create_dataset("dones", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.bool_, compression="gzip", compression_opts=9)
-        #         returns_dset = f.create_dataset("returns", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.float, compression="gzip", compression_opts=9)
-        #         targets_dset = f.create_dataset("targets", (self._num_batches_before_clear * batch_size,), maxshape=(None,),dtype=np.uint, compression="gzip", compression_opts=9)
-
 
     def forward(self, x: Tensor) -> Tuple[Tensor, Tensor]:
         """Passes in a state x through the network and gets the log prob of each action and the value for the state
@@ -128,12 +111,7 @@ class AdvantageActorCritic(LightningModule):
         Returns:
             action log probabilities, values
         """
-        # if not isinstance(x, list):
-        #     x = [x]
-        #
-        # if not isinstance(x, Tensor):
-        #     x = torch.tensor(x, device=self.device)
-        #
+
         logprobs, values = self.net(torch.tensor(np.array([x]), device=self.device))
         return logprobs, values
 
@@ -210,52 +188,6 @@ class AdvantageActorCritic(LightningModule):
 
             returns = self.compute_returns(batch_rewards, batch_masks, last_value)
 
-            # self._data["states"].extend(batch_states)
-            # self._data["actions"].extend(batch_actions)
-            # self._data["dones"].extend(batch_masks)
-            # self._data["returns"].extend(list(returns.numpy()))
-            # self._data["targets"].extend(batch_targets)
-
-            # if len(self._data["actions"]) >= self._num_batches_before_clear * len(batch_actions):
-                
-            #     length = len(self._data["actions"])
-
-                # file_name = "./data/a2c/" + self.env_str + ".hdf5"
-                # with h5py.File(file_name, 'a') as f:
-
-                #     states_dset = f["states"]
-                #     actions_dset = f["actions"]
-                #     dones_dset = f["dones"]
-                #     returns_dset = f["returns"]
-                #     targets_dset = f["targets"]
-
-                #     curr_size = states_dset.shape[0]
-
-                #     if self._resize_dset:
-                #         states_dset.resize(curr_size + length, axis=0)
-                #         actions_dset.resize(curr_size + length, axis=0)
-                #         dones_dset.resize(curr_size + length, axis=0)
-                #         returns_dset.resize(curr_size + length, axis=0)
-                #         targets_dset.resize(curr_size + length, axis=0)
-
-                #         states_dset[curr_size:, :] = self._data["states"]
-                #         actions_dset[curr_size:] = self._data["actions"]
-                #         dones_dset[curr_size:] = self._data["dones"]
-                #         returns_dset[curr_size:] = self._data["returns"]
-                #         targets_dset[curr_size:] = self._data["targets"]
-
-                #     else:
-                #         self._resize_dset = True
-                #         states_dset[:, :] = self._data["states"]
-                #         actions_dset[:] = self._data["actions"]
-                #         dones_dset[:] = self._data["dones"]
-                #         returns_dset[:] = self._data["returns"]
-                #         targets_dset[:] = self._data["targets"]
-
-                # # Free up memory
-                # for k in self._data:
-                #     self._data[k] = []
-
             for idx in range(self.hparams.batch_size):
                 yield batch_states[idx], batch_actions[idx], returns[idx], batch_targets[idx]
 
@@ -315,7 +247,6 @@ class AdvantageActorCritic(LightningModule):
         entropy = self.hparams.entropy_beta * entropy.sum(1).mean()
 
         # actor loss
-        # TODO: Change this
         # Here, actions is a tensor of shape (batch_size, 5)
         # How do we select the logprobs corresponding to these actions?
         # logprobs is of shape (batch_size, 5, 26)
@@ -353,8 +284,6 @@ class AdvantageActorCritic(LightningModule):
         loss = self.loss(states, actions, returns)
         
         #Calculate the Unique words used from actions
-        # self.unique_words_used.update(actions.tolist())
-        # import pdb;pdb.set_trace()
 
         if self.global_step % 200 == 0:
             metrics = {
@@ -367,7 +296,6 @@ class AdvantageActorCritic(LightningModule):
                 "total_losses": self._total_losses,
                 "reward_per_game": self._total_rewards / (self._wins+self._losses),
                 "global_step": self.global_step,
-                "Unique Words used" : len(self.unique_words_used),
             }
             if self._losses:
                 self.log("train_loss:", loss, prog_bar=True)
@@ -405,15 +333,6 @@ class AdvantageActorCritic(LightningModule):
                 metrics["last_loss"] = wandb.Table(data=[get_table_row(self._last_loss)], columns=['goal', 'guesses'])
 
             wandb.log(metrics)
-            # self.writer.add_scalar("train_loss", loss, global_step=self.global_step)
-            # self.writer.add_scalar("total_games_played", self.done_episodes, global_step=self.global_step)
-            
-            # self.writer.add_scalar("lose_ratio", self._losses/(self._wins+self._losses), global_step=self.global_step)
-            # self.writer.add_scalar("wins", self._wins, global_step=self.global_step)
-            # self.writer.add_scalar("reward_per_game", self._total_rewards / (self._wins+self._losses), global_step=self.global_step)
-            # if self._wins > 0:
-            #     self.writer.add_scalar("reward_per_win", self._winning_rewards / self._wins, global_step=self.global_step)
-            #     self.writer.add_scalar("avg_winning_turns", self._winning_steps/self._wins, global_step=self.global_step)
 
             self._winning_steps = 0
             self._winning_rewards = 0
@@ -424,12 +343,6 @@ class AdvantageActorCritic(LightningModule):
         log = {
             "episodes": self.done_episodes,
         }
-        # self.log("train_loss:", loss, prog_bar=True)
-        # self.log("loss_ratio:", self._losses/(self._wins+self._losses), prog_bar=True)
-        # self.log("avg_winning_turns:", self._winning_steps / self._wins, prog_bar=True)
-        # self.log("total wins:", self._total_wins, prog_bar=True)
-        # self.log("total losses:", self._total_losses, prog_bar=True)
-        # self.log("unique_words_used:", len(self.unique_words_used), prog_bar=True)
         return OrderedDict(
             {
                 "loss": loss,

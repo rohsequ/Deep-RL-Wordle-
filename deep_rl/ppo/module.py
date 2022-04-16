@@ -15,6 +15,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 import ppo
 import wordle.state
+from wordle.const import WORDLE_CHARS
 from ppo.agent import ActorCategorical
 from ppo.experience import ExperienceSourceDataset, Experience
 
@@ -141,6 +142,10 @@ class PPO(LightningModule):
         self._resize_dset = False
         self._data = {"states": [], "actions": [], "dones": [], "qvals": [], "adv": [], "targets" : []}
 
+        self.int2char = {k: c for k, c in enumerate(WORDLE_CHARS)}
+        self.char2int = {c: k for k, c in self.int2char.items()}
+
+
     def forward(self, x: Tensor) -> Tuple[Tensor, Tensor, Tensor]:
         """Passes in a state x through the network and returns the policy and a sampled action.
         Args:
@@ -206,6 +211,12 @@ class PPO(LightningModule):
             #     action = torch.tensor([self._cheat_word])
 
             act = action[0].numpy()
+            action_word = ''.join(self.int2char[a] for a in act)
+
+            if np.random.random() < self.hparams.prob_cheat:
+                action_word = self.env.words[self.env.goal_word]
+                act = [self.char2int[c] for c in action_word]
+
             next_state, reward, done, aux = self.env.step(act)
             reward = float(reward)
 
@@ -252,7 +263,7 @@ class PPO(LightningModule):
                 self.state = self.env.reset()
 
                 if done:
-                    if action == self.env.goal_word:
+                    if action_word == self.env.goal_word:
                         self._winning_steps += self.env.max_turns - wordle.state.remaining_steps(self.state)
                         self._wins += 1
                         self._winning_rewards += self.epoch_rewards[-1]
@@ -313,7 +324,9 @@ class PPO(LightningModule):
     def actor_loss(self, state, action, logp_old, adv) -> Tensor:
         pi, _ = self.actor(state)
         logp = self.actor.get_log_prob(pi, action)
-        ratio = torch.exp(logp - logp_old)
+        ratio = torch.exp((logp - logp_old).sum(-1))
+        # import pdb; pdb.set_trace()
+
         clip_adv = torch.clamp(ratio, 1 - self.clip_ratio, 1 + self.clip_ratio) * adv
         loss_actor = -(torch.min(ratio * adv, clip_adv)).mean()
         return loss_actor

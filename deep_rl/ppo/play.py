@@ -4,7 +4,7 @@ import wordle.state
 from ppo.agent import GreedyActorCategorical
 from ppo.module import PPO
 from wordle.wordle import WordleEnvBase
-
+from wordle.const import int2char
 
 def load_from_checkpoint(
         checkpoint: str,
@@ -20,32 +20,6 @@ def load_from_checkpoint(
 
     return model, agent, env
 
-
-def suggest(
-        agent: GreedyActorCategorical,
-        env: WordleEnvBase,
-        sequence: List[Tuple[str, List[int]]],
-) -> str:
-    """
-    Given a list of words and masks, return the next suggested word
-
-    :param agent:
-    :param env:
-    :param sequence: History of moves and outcomes until now
-    :return:
-    """
-    state = env.reset()
-    for word, mask in sequence:
-        word = word.upper()
-        assert word in env.words, f'{word} not in allowed words!'
-        assert all(i in (0, 1, 2) for i in mask)
-        assert len(mask) == 5
-
-        state = wordle.state.update_from_mask(state, word, mask)
-
-    return env.words[agent(state, "cpu")[0]]
-
-
 def goal(
         agent: GreedyActorCategorical,
         env: WordleEnvBase,
@@ -60,9 +34,10 @@ def goal(
     outcomes = []
     win = False
     for i in range(env.max_turns):
+        # dict_reduction_pattern = env.get_dict_reduce_pattern()
         action = agent(state, "cpu")[0]
         state, reward, done, _ = env.step(action)
-        outcomes.append((env.words[action], reward))
+        outcomes.append((''.join(int2char[a] for a in action), reward))
         if done:
             if reward >= 0:
                 win = True

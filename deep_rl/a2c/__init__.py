@@ -1,5 +1,4 @@
-from a2c.sumchars import SumChars
-from a2c.embeddingchars import EmbeddingChars
+from a2c.sumchars import SumChars, SumCharsLSTM
 
 _registry = {}
 
@@ -13,4 +12,4 @@ def construct(name, **kwargs):
 
 
 register(SumChars, "SumChars")
-register(EmbeddingChars, "EmbeddingChars")
+register(SumCharsLSTM, "SumCharsLSTM")
