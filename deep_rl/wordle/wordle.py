@@ -13,20 +13,7 @@ from wordle.const import *
 CUR_PATH = os.environ.get('PYTHONPATH', '.')
 import os
 dirname = os.path.dirname(__file__)
-# VALID_WORDS_PATH = f'{dirname}/../../data/words.csv'
 VALID_WORDS_PATH = f'{dirname}/../../data/wordle_words.txt'
-
-
-# def _load_words(limit: Optional[int]=None) -> List[str]:
-#     w_bank = pd.read_csv(VALID_WORDS_PATH)
-#     w_bank = w_bank[w_bank['words'].str.len() == WORDLE_N]
-#     lines = w_bank['words'].str.upper().tolist()
-#     # random.shuffle(lines)
-
-#     if not limit:
-#         return lines
-#     else:
-#         return lines[:limit]
 
 def _load_words(limit: Optional[int]=None) -> List[str]:
     with open(VALID_WORDS_PATH, 'r') as f:
@@ -170,51 +157,6 @@ class WordleEnvBase(gym.Env):
 
     def set_goal_id(self, goal_id: int):
         self.goal_word = goal_id
-    
-    # def get_dict_reduce_pattern(self):
-    #     return self.pattern
-    
-    # def set_dict_reduce_pattern(self, action):
-    #     color_invert = OrderedDict()
-    #     unique_letters = {''}
-    #     for k, v in (zip(action, self.color)):
-    #         if v not in color_invert.keys():
-    #             unique_letters.add(k)
-    #             if v == YELLOW:
-    #                 color_invert[v] = f"(?=.*{k}.*)"
-    #             if v == GREY:
-    #                 color_invert[v] = f"[^{k}<next>]"
-    #         else:
-    #             if k not in unique_letters:
-    #                 unique_letters.add(k)
-    #                 if v == YELLOW:
-    #                     color_invert[v]+=(f"(?=.*{k}.*)")
-    #                 if v == GREY:
-    #                     color_invert[v] = color_invert[v].replace("<next>", f"{k}<next>")
-
-    #     if YELLOW not in color_invert.keys():
-    #         color_invert[YELLOW] = ""
-    #     if GREY not in color_invert.keys():
-    #         color_invert[GREY] = "[A-Z]"
-    #     else:
-    #         color_invert[GREY] = color_invert[GREY].replace("<next>","")
-
-    #     self.pattern = "<green_grey_letters><yellow_letters>"
-    #     word_pattern = "(?=<word>)"
-
-
-    #     for key, val in (zip(action, self.color)):
-    #         if val == GREEN:
-    #             word_pattern = word_pattern.replace("<word>", f"[{key}]<word>")
-    #         if val == YELLOW:
-    #             word_pattern = word_pattern.replace("<word>", f"{color_invert[GREY]}<word>")
-    #         if val == GREY:
-    #             word_pattern = word_pattern.replace("<word>", f"{color_invert[GREY]}<word>")
-
-    #     word_pattern = word_pattern.replace("<word>", "")
-    #     self.pattern = self.pattern.replace("<green_grey_letters>", word_pattern)
-    #     self.pattern = self.pattern.replace("<yellow_letters>", f"{color_invert[YELLOW]}")
-    #     return self.pattern
 
 
 class WordleEnv10_4(WordleEnvBase):
