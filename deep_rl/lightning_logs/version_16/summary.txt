@@ -1,0 +1,42 @@
+Epoch 0: : 10001it [14:50, 11.23it/s, loss=-1.84, v_num=16, train_loss:=0.196, loss_ratio:=0.0281, total wins:=2.16e+5, total losses:=68923.0]      
+
+wandb: Waiting for W&B process to finish... (success).
+wandb:
+wandb: 
+wandb: Run history:
+wandb:  avg_winning_turns ▄▁▂▁▁▁▂▂▂▁▂▂▄▃▄▄▄▃▃▃▃▃▃▃▄▄▄▅▅▅▆▆▆▇▇▇▇███
+wandb:        global_step ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▆▇▇▇▇▇███
+wandb:         lose_ratio ███████████▇▆▅▄▄▂▂▂▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:             losses ▁███████████▆▆▅▄▃▃▂▂▂▂▂▂▁▁▁▁▁▁▁▁▁▁▂▁▁▁▁▁
+wandb:    reward_per_game ▁▁▂▂▂▂▂▂▂▂▂▃▄▄▅▅▆▇▇▇▇▇▇▇▇▇▇█████████████
+wandb:     reward_per_win ▃▁▂▂▂▂▂▂▃▂▃▃▅▅▅▅▅▅▅▅▆▆▆▆▆▆▆▇▇▇▇▇█▇██████
+wandb: total_games_played ▁▁▁▁▂▂▂▂▂▂▂▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇███
+wandb:       total_losses ▁▁▂▂▃▃▄▄▅▅▅▆▆▆▇▇▇▇▇▇▇▇▇█████████████████
+wandb:         total_wins ▁▁▁▁▁▁▁▁▁▁▂▂▂▂▂▂▂▃▃▃▃▄▄▄▄▅▅▅▅▆▆▆▆▇▇▇▇▇██
+wandb:         train_loss ██▇█▇███▇████▇▇█▇▇▇▆▅▇█▆▅▄▁▇▃▇█▄▅▃▃▆▅▃▄▇
+wandb:               wins ▁▂▂▂▂▂▂▂▂▂▂▃▄▄▅▅▆▇▇█████████▇▇▇▇▇▇▇▇▇▇▇▇
+wandb:
+wandb: Run summary:
+wandb:  avg_winning_turns 4.45525
+wandb:        global_step 9800
+wandb:         lose_ratio 0.02811
+wandb:             losses 160
+wandb:    reward_per_game 56.01277
+wandb:     reward_per_win 57.92255
+wandb: total_games_played 284726
+wandb:       total_losses 68923
+wandb:         total_wins 215803
+wandb:         train_loss 0.19633
+wandb:               wins 5531
+wandb:
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync C:\Users\shreyasb\Desktop\EECS545\5-letter\Deep-RL-Wordle-\deep_rl\wandb\offline-run-20220419_130722-2l7jq02n
+wandb: Find logs at: .\wandb\offline-run-20220419_130722-2l7jq02n\logs
+
+WordleEnv10-v0
+Character level rl 
+prob_cheat=0.05
+wins on 10/10 Words
+n_hidden = 2
+hidden_size=512
+batch_size=256
