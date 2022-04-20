@@ -5,9 +5,7 @@ from typing import Optional, List
 import gym
 from gym import spaces
 import numpy as np
-import pandas as pd
 import wordle.state
-import random
 from wordle.const import *
 
 CUR_PATH = os.environ.get('PYTHONPATH', '.')
@@ -157,6 +155,11 @@ class WordleEnvBase(gym.Env):
 
     def set_goal_id(self, goal_id: int):
         self.goal_word = goal_id
+
+
+class WordleEnv2000_6(WordleEnvBase):
+    def __init__(self):
+        super().__init__(words=_load_words(2000), max_turns=7, word_n=6)
 
 
 class WordleEnv10_4(WordleEnvBase):

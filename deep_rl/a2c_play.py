@@ -81,22 +81,22 @@ def evaluate(agent, env):
     n_guesses = 0
     n_win_guesses = 0
     N = env.allowable_words
-    for goal_word in (pbar:= tqdm(env.words[:N])):
+    for goal_word in (pbar := tqdm(env.words[:N])):
         win, outcomes = a2c.play.goal(agent, env, goal_word)
         if win:
             n_wins += 1
             n_win_guesses += len(outcomes)
-            print("Win!", goal_word, outcomes)
+            # print("Win!", goal_word, outcomes)
             
         else:
             n_losses +=1
-            print("Lost!", goal_word, outcomes)
+            # print("Lost!", goal_word, outcomes)
             pass
         pbar.set_description("Count: Wins: %d   Loss: %d" % (n_wins, n_losses))
         n_guesses += len(outcomes)
 
-    # print(f"Evaluation complete, won {n_wins/N}% and took {n_win_guesses/n_wins} guesses per win, "
-        #   f"{n_guesses / N} including losses.")
+    print(f"Evaluation complete, won {n_wins*100/N}% and took {n_win_guesses/n_wins} guesses per win, "
+          f"{n_guesses / N} including losses.")
 
 
 if __name__ == '__main__':

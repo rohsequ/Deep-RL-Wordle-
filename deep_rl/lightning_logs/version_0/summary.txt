@@ -1,0 +1,76 @@
+python a2c_train.py --batch_size=128 --lr=5e-5 --n_hidden=2 --hidden_size=512 --env=WordleEnv2000_6-v0 --prob_cheat=0.05 --max_steps=500000  
+wandb: (1) Create a W&B account
+wandb: (2) Use an existing W&B account
+wandb: (3) Don't visualize my results
+wandb: Enter your choice:              3
+wandb: You chose 'Don't visualize my results'
+wandb: Tracking run with wandb version 0.12.14
+wandb: W&B syncing is set to `offline` in this directory.
+wandb: Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+Global seed set to 123
+GPU available: True, used: False
+TPU available: False, using: 0 TPU cores
+IPU available: False, using: 0 IPUs
+C:\Users\shreyasb\Anaconda3\envs\eecs545\lib\site-packages\pytorch_lightning\trainer\trainer.py:1584: UserWarning: GPU available but not used. Set the gpus flag in your trainer `Trainer(gpus=1)` or script `--gpus=1`.  
+  rank_zero_warn(
+
+  | Name | Type     | Params
+----------------------------------
+0 | net  | SumChars | 883 K
+----------------------------------
+883 K     Trainable params
+0         Non-trainable params
+883 K     Total params
+3.536     Total estimated model params size (MB)
+C:\Users\shreyasb\Anaconda3\envs\eecs545\lib\site-packages\pytorch_lightning\trainer\data_loading.py:132: UserWarning: The dataloader, train_dataloader, does not have many workers which may be a bottleneck. Consider increasing the value of the `num_workers` argument` (try 20 which is the number of cpus on this machine) in the `DataLoader` init to improve performance.
+  rank_zero_warn(
+Epoch 0: : 0it [00:00, ?it/s]C:\Users\shreyasb\Anaconda3\envs\eecs545\lib\site-packages\pytorch_lightning\trainer\connectors\logger_connector\result.py:227: UserWarning: You called `self.log('total wins:', ...)` in your `training_step` but the value needs to be floating point. Converting it to torch.float32.
+  warning_cache.warn(
+C:\Users\shreyasb\Anaconda3\envs\eecs545\lib\site-packages\pytorch_lightning\trainer\connectors\logger_connector\result.py:227: UserWarning: You called `self.log('total losses:', ...)` in your `training_step` but the value needs to be floating point. Converting it to torch.float32.
+  warning_cache.warn(
+Epoch 0: : 500001it [16:39:23,  8.34it/s, loss=-0.0172, v_num=0, train_loss:=0.169, loss_ratio:=0.270, total wins:=5.83e+6, total losses:=5.54e+6]    
+
+wandb: Waiting for W&B process to finish... (success).
+wandb:
+wandb: 
+wandb: Run history:
+wandb:  Unique Words used ▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁
+wandb:  avg_winning_turns ▁▁▁▁▁▁▂▂▂▂▃▄▄▅▅▅▅▆▆▆▆▆▇▆▇▇▇▇▇▇▇█▇███▇███
+wandb:        global_step ▁▁▁▁▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇▇███
+wandb:         lose_ratio █████████▇▇▇▇▆▆▆▆▅▅▅▄▄▄▄▄▄▃▃▃▂▃▂▂▂▂▂▁▁▁▁
+wandb:             losses ██████████▇▇▇▇▆▆▆▅▅▅▅▅▄▄▄▄▄▃▃▃▃▂▂▂▂▂▂▂▁▁
+wandb:    reward_per_game ▁▁▂▂▂▂▂▂▂▃▃▃▃▄▄▅▅▅▅▅▆▆▆▆▆▆▆▇▇▇▇▇▇▇▇█████
+wandb:     reward_per_win ▁▁▂▂▂▂▃▂▃▃▃▄▅▆▆▆▆▆▇▇▇▇▇▇▇▇▇▇▇▇▇█████████
+wandb: total_games_played ▁▁▁▁▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▅▅▆▆▆▆▆▇▇▇▇▇███
+wandb:       total_losses ▁▁▁▂▂▂▂▃▃▃▃▄▄▄▄▄▅▅▅▅▅▆▆▆▆▆▆▆▇▇▇▇▇▇▇█████
+wandb:         total_wins ▁▁▁▁▁▁▂▂▂▂▂▂▂▂▂▃▃▃▃▃▃▄▄▄▄▄▅▅▅▅▆▆▆▆▇▇▇▇██
+wandb:         train_loss ▄▅▄▆▅▅▆▄▆▆█▅▄▃▄▂▂▄▃▃▃▃▂▄▄▃▃▂▃▂▃▂▁▃▂▁▃▄▄▃
+wandb:               wins ▁▁▁▁▁▁▁▁▁▁▂▂▂▂▃▃▃▃▄▄▄▄▅▅▅▅▅▆▆▆▆▇▇▇▇▇█▇██
+wandb:
+wandb: Run summary:
+wandb:  Unique Words used 1
+wandb:  avg_winning_turns 4.58123
+wandb:        global_step 499800
+wandb:         lose_ratio 0.26994
+wandb:             losses 1320
+wandb:    reward_per_game 48.40855
+wandb:     reward_per_win 65.48739
+wandb: total_games_played 11369976
+wandb:       total_losses 5540058
+wandb:         total_wins 5829918
+wandb:         train_loss 0.16927
+wandb:               wins 3570
+wandb:
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync C:\Users\shreyasb\Desktop\EECS545\6-letter\Deep-RL-Wordle-\deep_rl\wandb\offline-run-20220417_143859-2qmd9nyv
+wandb: Find logs at: .\wandb\offline-run-20220417_143859-2qmd9nyv\logs
+
+WordleEnv2000_6-v0 (6-Letter Dataset)
+Character level rl 
+prob_cheat=0.05
+wins on 1374/2000 Words
+n_hidden = 2
+hidden_size=512
+batch_size=128
+lr=5e-5
+max_steps=500k

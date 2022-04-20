@@ -16,6 +16,12 @@ register(
 )
 
 register(
+    id="WordleEnv2000_6-v0",
+    entry_point="wordle.wordle:WordleEnv2000_6",
+    max_episode_steps=200,
+)
+
+register(
     id="WordleEnv10-v0",
     entry_point="wordle.wordle:WordleEnv10",
     max_episode_steps=200,
